@@ -3,9 +3,9 @@ import BottomNav from './BottomNav';
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-8">
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 sm:py-8">
       
-      <div className="w-[412px] h-[917px] bg-white rounded-2xl shadow-xl flex flex-col relative overflow-hidden font-['Inter']">
+      <div className="w-full h-screen sm:w-[412px] sm:h-[917px] bg-white flex flex-col relative overflow-hidden font-['Inter'] sm:rounded-2xl sm:shadow-xl">
         
         <div className="flex-1 flex flex-col overflow-hidden">
           {children}
