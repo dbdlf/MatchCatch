@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Layout from '../components/Layout';
 
 function ReviewPage() {
   const navigate = useNavigate();
@@ -29,9 +30,8 @@ function ReviewPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-8">
-      <div className="w-[412px] h-[917px] bg-white rounded-2xl shadow-xl flex flex-col relative overflow-hidden font-['Inter']">
-        
+    <Layout hideNav>
+
         {/* 상단 헤더 */}
         <div className="px-6 py-6 border-b border-gray-100 flex items-center">
           <button onClick={() => navigate(-1)} className="p-1">
@@ -110,8 +110,7 @@ function ReviewPage() {
           </div>
         </div>
 
-      </div>
-    </div>
+    </Layout>
   );
 }
 

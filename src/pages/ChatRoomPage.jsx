@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import Layout from '../components/Layout';
 
 function ChatRoomPage() {
   const navigate = useNavigate();
@@ -18,9 +19,7 @@ function ChatRoomPage() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-8">
-      <div className="w-[412px] h-[917px] bg-white rounded-2xl shadow-xl flex flex-col relative overflow-hidden font-['Inter']">
-        
+    <Layout hideNav>
         {/* 상단 네비게이션 */}
         <div className="flex items-center px-4 py-4 border-b border-gray-100">
           <button onClick={() => navigate(-1)} className="p-1 mr-2">
@@ -74,8 +73,7 @@ function ChatRoomPage() {
                 </button>
             </div>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 }
 

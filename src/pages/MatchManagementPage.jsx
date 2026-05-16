@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Layout from '../components/Layout';
 
 function MatchManagementPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('received'); // 'received' or 'sent'
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-8">
-      <div className="w-[412px] h-[917px] bg-white rounded-2xl shadow-xl flex flex-col relative overflow-hidden font-['Inter']">
-        
+    <Layout hideNav>
         {/* 상단 헤더 */}
         <div className="flex items-center px-4 py-6 border-b border-gray-100">
           <button onClick={() => navigate(-1)} className="p-1 mr-4">
@@ -68,8 +67,7 @@ function MatchManagementPage() {
             </div>
           )}
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 }
 

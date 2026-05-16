@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import Layout from '../components/Layout';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -16,8 +17,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-8">
-      <div className="w-[412px] h-[917px] bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center">
+    <Layout hideNav>
         <h1 className="text-5xl font-bold mb-20 text-center">
           <span className="text-[#FF8C69]">Match</span> <span className="text-[#FFC107]">Catch!!</span>
         </h1>
@@ -58,8 +58,7 @@ const LoginPage = () => {
             아직 회원이 아니신가요?
           </Link>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 };
 

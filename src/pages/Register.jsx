@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Layout from '../components/Layout';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -72,9 +73,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 py-8">
-      <div className="w-[412px] h-[917px] bg-white rounded-2xl shadow-lg p-8 flex flex-col justify-between overflow-y-auto">
-        
+    <Layout hideNav>
         {/* 입력 폼 영역 */}
         <div className="mt-6 space-y-6 flex-1">
           <h1 className="text-2xl font-bold text-gray-900 text-center mb-8">회원가입</h1>
@@ -174,8 +173,7 @@ const RegisterPage = () => {
           </button>
         </div>
 
-      </div>
-    </div>
+    </Layout>
   );
 };
 
