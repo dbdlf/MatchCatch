@@ -1,0 +1,186 @@
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Layout from '../components/Layout'; // 공통 레이아웃 사용
+
+function ProfileEditPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // 1. 기존 유저 데이터 초기값
+  const [initialData] = useState({
+    id: location.state?.userId || "차차",
+    email: "chacha@daejeon.ac.kr"
+  });
+
+  // 2. 입력 폼 상태 관리
+  const [formData, setFormData] = useState({
+    id: initialData.id,
+    email: initialData.email,
+    password: "",
+    confirmPassword: ""
+  });
+
+  // 3. 중복 확인 통과 여부
+  const [isIdChecked, setIsIdChecked] = useState(true);
+  const [isEmailChecked, setIsEmailChecked] = useState(true);
+
+  // 아이디 변경 시 처리
+  const handleIdChange = (e) => {
+    const value = e.target.value;
+    setFormData({ ...formData, id: value });
+    setIsIdChecked(value === initialData.id);
+  };
+
+  // 이메일 변경 시 처리
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setFormData({ ...formData, email: value });
+    setIsEmailChecked(value === initialData.email);
+  };
+
+  // 가상 중복 확인 함수들
+  const checkIdDuplicate = () => {
+    if (!formData.id.trim()) return alert("아이디를 입력해주세요.");
+    if (formData.id === "중복맨") {
+      alert("이미 존재하는 아이디입니다.");
+      setIsIdChecked(false);
+    } else {
+      alert("사용 가능한 아이디입니다.");
+      setIsIdChecked(true);
+    }
+  };
+
+  const checkEmailDuplicate = () => {
+    if (!formData.email.trim()) return alert("이메일을 입력해주세요.");
+    alert("사용 가능한 이메일입니다.");
+    setIsEmailChecked(true);
+  };
+
+  // 4. 유효성 검사 및 완료 버튼 활성화 조건식
+  const isIdValid = formData.id === initialData.id || isIdChecked;
+  const isEmailValid = formData.email === initialData.email || isEmailChecked;
+  
+  // 비밀번호 검증: 둘 다 빈칸이거나(변경 안 함), 둘의 입력값이 정확히 일치할 때만 true
+  const isPasswordValid = formData.password === formData.confirmPassword;
+
+  // 전체 폼 유효성 합산
+  const isFormValid = 
+    isIdValid && 
+    isEmailValid && 
+    isPasswordValid && 
+    formData.id.trim() && 
+    formData.email.trim();
+
+  // 저장 완료 처리
+  const handleSubmit = () => {
+    if (!isFormValid) return;
+    alert("프로필 수정이 완료되었습니다!");
+    navigate('/profile', { state: { isOwnProfile: true, userId: formData.id } });
+  };
+
+  return (
+    <Layout>
+      {/* 상단 헤더 */}
+      <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100 bg-white">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="text-gray-400 text-sm font-medium hover:text-black transition-colors"
+        >
+          취소
+        </button>
+        <h1 className="text-base font-bold text-gray-900">프로필 수정</h1>
+        <button 
+          disabled={!isFormValid}
+          onClick={handleSubmit}
+          className={`text-sm font-bold transition-colors ${isFormValid ? 'text-[#FFD18F] hover:opacity-80' : 'text-gray-300 cursor-not-allowed'}`}
+        >
+          완료
+        </button>
+      </div>
+
+      {/* 입력 영역 (스크롤 가능) */}
+      <div className="flex-1 p-6 space-y-6 bg-white overflow-y-auto pb-24">
+        
+        {/* 아이디 입력 필드 */}
+        <div className="space-y-2">
+          <label className="text-xs text-gray-400 font-bold block">아이디</label>
+          <div className="flex space-x-2">
+            <input 
+              type="text" 
+              value={formData.id}
+              onChange={handleIdChange}
+              className="flex-1 p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium"
+              placeholder="변경할 아이디 입력"
+            />
+            {formData.id !== initialData.id && (
+              <button 
+                onClick={checkIdDuplicate}
+                className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors ${isIdChecked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              >
+                {isIdChecked ? '확인 완료' : '중복 확인'}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* 이메일 입력 필드 */}
+        <div className="space-y-2">
+          <label className="text-xs text-gray-400 font-bold block">이메일</label>
+          <div className="flex space-x-2">
+            <input 
+              type="email" 
+              value={formData.email}
+              onChange={handleEmailChange}
+              className="flex-1 p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium"
+              placeholder="변경할 이메일 입력"
+            />
+            {formData.email !== initialData.email && (
+              <button 
+                onClick={checkEmailDuplicate}
+                className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors ${isEmailChecked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              >
+                {isEmailChecked ? '확인 완료' : '중복 확인'}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* 새 비밀번호 입력 필드 */}
+        <div className="space-y-2">
+          <label className="text-xs text-gray-400 font-bold block">새 비밀번호</label>
+          <input 
+            type="password" 
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium"
+            placeholder="변경할 새 비밀번호 입력 (선택)"
+          />
+        </div>
+
+        {/* 새 비밀번호 재확인 필드 */}
+        <div className="space-y-2">
+          <label className="text-xs text-gray-400 font-bold block">새 비밀번호 재확인</label>
+          <input 
+            type="password" 
+            value={formData.confirmPassword}
+            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+            className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium"
+            placeholder="새 비밀번호 다시 입력"
+          />
+          
+          {/* 실시간 비밀번호 일치여부 시각화 피드백 */}
+          {formData.confirmPassword && (
+            formData.password === formData.confirmPassword ? (
+              <p className="text-xs text-green-500 font-medium mt-1"> 비밀번호가 일치합니다.</p>
+            ) : (
+              <p className="text-xs text-red-500 font-medium mt-1"> 비밀번호가 일치하지 않습니다.</p>
+            )
+          )}
+        </div>
+
+      </div>
+    </Layout>
+  );
+}
+
+export default ProfileEditPage;

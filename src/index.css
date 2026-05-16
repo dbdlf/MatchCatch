@@ -1,0 +1,15 @@
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+body {
+  margin: 0;
+  background-color: #f3f4f6;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: block;
+  box-sizing: border-box;
+}
