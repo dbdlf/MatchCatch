@@ -6,7 +6,6 @@ import RegisterPage from './pages/Register';
 import SearchResultPage from './pages/SearchResultPage';
 import PostDetailPage from './pages/PostDetailPage';
 import ChatListPage from './pages/ChatListPage';
-import ChatRoomPage from './pages/ChatRoomPage';
 import MatchManagementPage from './pages/MatchManagementPage';
 import ReviewPage from './pages/ReviewPage';
 import ProfileEditPage from './pages/ProfileEditPage';
@@ -25,7 +24,6 @@ function App() {
         <Route path="/searchresult" element={<SearchResultPage />} />
         <Route path="/postdetail" element={<PostDetailPage />} />
         <Route path="/chatlist" element={<ChatListPage />} />
-        <Route path="/chatroom" element={<ChatRoomPage />} />
         <Route path="/matchmanagement" element={<MatchManagementPage />} />
         <Route path="/review" element={<ReviewPage />} />
         <Route path="/profileedit" element={<ProfileEditPage />} />

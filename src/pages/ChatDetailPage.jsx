@@ -112,7 +112,13 @@ function ChatDetailPage() {
                 <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center max-w-[90%] shadow-sm space-y-3">
                   <p className="text-xs text-gray-600 leading-relaxed font-medium">{msg.text}</p>
                   <button 
-                    onClick={() => navigate('/review/123')}
+                    onClick={() => navigate('/review', {
+                      state: {
+                        matchId: chatRoomInfo.id,
+                        opponentName: chatRoomInfo.partnerId,
+                        postTitle: chatRoomInfo.itemTitle
+                      }
+                    })}
                     className="w-full bg-[#FFD18F] text-black text-xs font-bold py-2 rounded-xl hover:brightness-95 active:scale-[0.98] transition-all"
                   >
                     후기 작성하러 가기
