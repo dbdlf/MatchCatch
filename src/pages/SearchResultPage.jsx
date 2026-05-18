@@ -29,13 +29,11 @@ function SearchResultPage() {
   return (
     <Layout>
 
-    
-        
         {/* 상단 헤더 */}
         <div className="flex items-center px-6 py-6 border-b border-gray-100">
           <h1 className="text-xl font-bold ml-4 relative">
             검색결과
-            <span className="absolute bottom-0 left-0 w-full h-1 bg-blue-400 -mb-1 opacity-50"></span>
+            <span className="absolute bottom-0 left-0 w-full h-1 bg-[#FFD18F]-400 -mb-1 opacity-50"></span>
           </h1>
         </div>
 
