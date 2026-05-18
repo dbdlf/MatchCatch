@@ -30,7 +30,6 @@ const RegisterPage = () => {
   const checkEmailDuplicate = () => {
     if (!formData.email.trim()) return alert('이메일을 입력해주세요.');
     
-    // 단순 예시 시뮬레이션
     if (formData.email === 'chacha@daejeon.ac.kr') {
       alert('이미 등록된 이메일입니다.');
       setIsEmailChecked(false);
@@ -74,17 +73,19 @@ const RegisterPage = () => {
 
   return (
     <Layout hideNav>
-        {/* 입력 폼 영역 */}
-        <div className="mt-6 space-y-6 flex-1">
-          <h1 className="text-2xl font-bold text-gray-900 text-center mb-8">회원가입</h1>
+      <div className="flex-1 flex flex-col justify-between px-6 py-10 bg-white h-full overflow-y-auto">
+        
+        {/* 상단 폼 영역 묶음 */}
+        <div className="space-y-6 mt-4">
+          <h1 className="text-2xl font-bold text-gray-900 text-center mb-6">회원가입</h1>
           
           {/* 이메일 입력 필드 + 중복확인 버튼 */}
-          <div className="space-y-2">
-            <label className="block text-gray-800 font-bold text-sm">Email</label>
+          <div className="space-y-1.5">
+            <label className="block text-gray-800 font-bold text-sm pl-1">Email</label>
             <div className="flex space-x-2">
               <input 
                 name="email"
-                className="flex-1 p-3.5 border border-gray-200 rounded-lg outline-none text-sm focus:ring-2 focus:ring-[#FFC107]" 
+                className="flex-1 p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
                 type="text" 
                 placeholder="example1234@email.com"
                 value={formData.email}
@@ -93,7 +94,7 @@ const RegisterPage = () => {
               <button 
                 type="button"
                 onClick={checkEmailDuplicate}
-                className={`px-3 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${isEmailChecked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                className={`px-4 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${isEmailChecked ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'}`}
               >
                 {isEmailChecked ? '확인 완료' : '중복 확인'}
               </button>
@@ -101,12 +102,12 @@ const RegisterPage = () => {
           </div>
 
           {/* 아이디 입력 필드 + 중복확인 버튼 */}
-          <div className="space-y-2">
-            <label className="block text-gray-800 font-bold text-sm">아이디</label>
+          <div className="space-y-1.5">
+            <label className="block text-gray-800 font-bold text-sm pl-1">아이디</label>
             <div className="flex space-x-2">
               <input 
                 name="userId"
-                className="flex-1 p-3.5 border border-gray-200 rounded-lg outline-none text-sm focus:ring-2 focus:ring-[#FFC107]" 
+                className="flex-1 p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
                 type="text" 
                 placeholder="사용할 아이디 입력"
                 value={formData.userId}
@@ -115,7 +116,7 @@ const RegisterPage = () => {
               <button 
                 type="button"
                 onClick={checkIdDuplicate}
-                className={`px-3 rounded-lg text-xs font-bold transition-colors whitespace-nowrap ${isIdChecked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                className={`px-4 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${isIdChecked ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'}`}
               >
                 {isIdChecked ? '확인 완료' : '중복 확인'}
               </button>
@@ -123,11 +124,11 @@ const RegisterPage = () => {
           </div>
 
           {/* 비밀번호 */}
-          <div className="space-y-2">
-            <label className="block text-gray-800 font-bold text-sm">비밀번호</label>
+          <div className="space-y-1.5">
+            <label className="block text-gray-800 font-bold text-sm pl-1">비밀번호</label>
             <input 
               name="password"
-              className="w-full p-3.5 border border-gray-200 rounded-lg outline-none text-sm focus:ring-2 focus:ring-[#FFC107]" 
+              className="w-full p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
               type="password" 
               placeholder="비밀번호 입력"
               value={formData.password}
@@ -136,11 +137,11 @@ const RegisterPage = () => {
           </div>
 
           {/* 비밀번호 확인 + 실시간 피드백 */}
-          <div className="space-y-2">
-            <label className="block text-gray-800 font-bold text-sm">비밀번호 확인</label>
+          <div className="space-y-1.5">
+            <label className="block text-gray-800 font-bold text-sm pl-1">비밀번호 확인</label>
             <input 
               name="confirmPassword"
-              className="w-full p-3.5 border border-gray-200 rounded-lg outline-none text-sm focus:ring-2 focus:ring-[#FFC107]" 
+              className="w-full p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
               type="password" 
               placeholder="비밀번호 다시 입력"
               value={formData.confirmPassword}
@@ -150,29 +151,30 @@ const RegisterPage = () => {
             {/* 실시간 패스워드 일치 여부 시각화 피드백 */}
             {formData.confirmPassword && (
               formData.password === formData.confirmPassword ? (
-                <p className="text-xs text-green-500 font-medium mt-1">✓ 비밀번호가 일치합니다.</p>
+                <p className="text-xs text-green-500 font-medium mt-1 pl-1">✓ 비밀번호가 일치합니다.</p>
               ) : (
-                <p className="text-xs text-red-500 font-medium mt-1">✗ 비밀번호가 일치하지 않습니다.</p>
+                <p className="text-xs text-red-500 font-medium mt-1 pl-1">✗ 비밀번호가 일치하지 않습니다.</p>
               )
             )}
           </div>
         </div>
 
         {/* 하단 버튼 영역 */}
-        <div className="mt-8 mb-4">
+        <div className="w-full mt-8 mb-2">
           <button 
             disabled={!isFormValid}
             onClick={handleRegister}
-            className={`w-full py-4 rounded-lg text-lg font-bold transition-all shadow-sm ${
+            className={`w-full py-4 rounded-xl text-base font-bold transition-all shadow-sm ${
               isFormValid 
-                ? 'bg-[#FFDCA8] border border-gray-400 text-gray-800 active:scale-[0.98] hover:brightness-95 cursor-pointer' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed border-none'
+                ? 'bg-[#FFC107] text-gray-900 active:scale-[0.98] hover:brightness-95 cursor-pointer' 
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
             가입하기
           </button>
         </div>
 
+      </div>
     </Layout>
   );
 };
