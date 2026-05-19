@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import BottomNav from '../components/BottomNav';
 import Layout from '../components/Layout';
+import { profileApi } from '../api';
 
 function ProfilePage() {
   const navigate = useNavigate();

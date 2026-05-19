@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout'; 
+import { matchApi } from '../api';
 
 function PostDetailPage() {
   const navigate = useNavigate();
@@ -58,16 +59,18 @@ function PostDetailPage() {
   };
 
   const handleEditPost = () => {
-    if (postData.status === "DELIVERED") {
-      alert("인도가 완료된 게시글은 수정할 수 없습니다.");
-      return;
-    }
-    navigate('/postedit', { 
-      state: { 
-        postData: postData 
-      } 
-    });
-  };
+  // 상태가 REGISTERED(등록 완료)일 때만 수정 페이지로 이동 허용
+  if (postData.status !== "REGISTERED") {
+    alert("매칭이 진행 중이거나 인도가 완료된 게시글은 수정할 수 없습니다.");
+    return;
+  }
+  
+  navigate('/postedit', { 
+    state: { 
+      postData: postData 
+    } 
+  });
+};
 
   const handleGoProfile = () => {
     navigate('/profile', { state: { userId: postData.author.id, isOwnProfile: false } });

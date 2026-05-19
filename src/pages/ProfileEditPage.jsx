@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Layout from '../components/Layout'; // 공통 레이아웃 사용
+import Layout from '../components/Layout';
+import { profileApi } from '../api';
 
 function ProfileEditPage() {
   const navigate = useNavigate();

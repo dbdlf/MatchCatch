@@ -47,4 +47,18 @@ export const itemApi = {
       }
     ];
   }
+
+  // 습득물 수정
+  editFoundItem: async (itemId, formData) => {
+    await delay(800);
+    console.log(`[PATCH /api/found-items/${itemId}] 습득물 수정 데이터:`, formData);
+    return { success: true, item_id: itemId };
+  },
+
+  // 분실물 수정
+  editLostItem: async (itemId, formData) => {
+    await delay(800);
+    console.log(`[PATCH /api/lost-items/${itemId}] 분실물 수정 데이터:`, formData);
+    return { success: true, item_id: itemId };
+  }
 };
