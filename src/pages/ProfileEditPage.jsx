@@ -9,33 +9,37 @@ function ProfileEditPage() {
   // 1. 기존 유저 데이터 초기값
   const [initialData] = useState({
     id: location.state?.userId || "차차",
-    email: "chacha@daejeon.ac.kr"
+    studentId: "20261234" // 기존에 등록된 가상의 학번 데이터
   });
 
   // 2. 입력 폼 상태 관리
   const [formData, setFormData] = useState({
     id: initialData.id,
-    email: initialData.email,
+    studentId: initialData.studentId,
     password: "",
     confirmPassword: ""
   });
 
   // 3. 중복 확인 통과 여부
   const [isIdChecked, setIsIdChecked] = useState(true);
-  const [isEmailChecked, setIsEmailChecked] = useState(true);
+  const [isStudentIdChecked, setIsStudentIdChecked] = useState(true);
 
   // 아이디 변경 시 처리
   const handleIdChange = (e) => {
     const value = e.target.value;
     setFormData({ ...formData, id: value });
+    // 초기 아이디와 같으면 다시 true로, 다르면 false로 변경
     setIsIdChecked(value === initialData.id);
   };
 
-  // 이메일 변경 시 처리
-  const handleEmailChange = (e) => {
+  // 학번 변경 시 처리 (숫자만 입력되도록 제어)
+  const handleStudentIdChange = (e) => {
     const value = e.target.value;
-    setFormData({ ...formData, email: value });
-    setIsEmailChecked(value === initialData.email);
+    const onlyNumbers = value.replace(/[^0-9]/g, ''); // 숫자 이외의 문자 제거
+    
+    setFormData({ ...formData, studentId: onlyNumbers });
+    // 초기 학번과 같으면 중복확인 패스, 다르면 다시 중복확인 필요
+    setIsStudentIdChecked(onlyNumbers === initialData.studentId);
   };
 
   // 가상 중복 확인 함수들
@@ -50,15 +54,22 @@ function ProfileEditPage() {
     }
   };
 
-  const checkEmailDuplicate = () => {
-    if (!formData.email.trim()) return alert("이메일을 입력해주세요.");
-    alert("사용 가능한 이메일입니다.");
-    setIsEmailChecked(true);
+  const checkStudentIdDuplicate = () => {
+    if (!formData.studentId.trim()) return alert("학번을 입력해주세요.");
+    
+    // 가상의 중복된 학번 예시
+    if (formData.studentId === "20260000") {
+      alert("이미 가입된 학번입니다.");
+      setIsStudentIdChecked(false);
+    } else {
+      alert("사용 가능한 학번입니다.");
+      setIsStudentIdChecked(true);
+    }
   };
 
   // 4. 유효성 검사 및 완료 버튼 활성화 조건식
   const isIdValid = formData.id === initialData.id || isIdChecked;
-  const isEmailValid = formData.email === initialData.email || isEmailChecked;
+  const isStudentIdValid = formData.studentId === initialData.studentId || isStudentIdChecked;
   
   // 비밀번호 검증: 둘 다 빈칸이거나(변경 안 함), 둘의 입력값이 정확히 일치할 때만 true
   const isPasswordValid = formData.password === formData.confirmPassword;
@@ -66,10 +77,10 @@ function ProfileEditPage() {
   // 전체 폼 유효성 합산
   const isFormValid = 
     isIdValid && 
-    isEmailValid && 
+    isStudentIdValid && 
     isPasswordValid && 
     formData.id.trim() && 
-    formData.email.trim();
+    formData.studentId.trim();
 
   // 저장 완료 처리
   const handleSubmit = () => {
@@ -123,23 +134,25 @@ function ProfileEditPage() {
           </div>
         </div>
 
-        {/* 이메일 입력 필드 */}
+        {/* 학번 입력 필드 */}
         <div className="space-y-2">
-          <label className="text-xs text-gray-400 font-bold block">이메일</label>
+          <label className="text-xs text-gray-400 font-bold block">학번</label>
           <div className="flex space-x-2">
             <input 
-              type="email" 
-              value={formData.email}
-              onChange={handleEmailChange}
+              type="text" 
+              inputMode="numeric"
+              value={formData.studentId}
+              onChange={handleStudentIdChange}
               className="flex-1 p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium"
-              placeholder="변경할 이메일 입력"
+              placeholder="변경할 학번 (숫자만 입력)"
             />
-            {formData.email !== initialData.email && (
+            {/* 기존 학번과 다를 때만 중복 확인 버튼 표시 */}
+            {formData.studentId !== initialData.studentId && (
               <button 
-                onClick={checkEmailDuplicate}
-                className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors ${isEmailChecked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                onClick={checkStudentIdDuplicate}
+                className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors ${isStudentIdChecked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
               >
-                {isEmailChecked ? '확인 완료' : '중복 확인'}
+                {isStudentIdChecked ? '확인 완료' : '중복 확인'}
               </button>
             )}
           </div>
@@ -171,9 +184,9 @@ function ProfileEditPage() {
           {/* 실시간 비밀번호 일치여부 시각화 피드백 */}
           {formData.confirmPassword && (
             formData.password === formData.confirmPassword ? (
-              <p className="text-xs text-green-500 font-medium mt-1"> 비밀번호가 일치합니다.</p>
+              <p className="text-xs text-green-500 font-medium mt-1">✓ 비밀번호가 일치합니다.</p>
             ) : (
-              <p className="text-xs text-red-500 font-medium mt-1"> 비밀번호가 일치하지 않습니다.</p>
+              <p className="text-xs text-red-500 font-medium mt-1">✗ 비밀번호가 일치하지 않습니다.</p>
             )
           )}
         </div>
