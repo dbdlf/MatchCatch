@@ -10,10 +10,10 @@ function ChatDetailPage() {
     id: location.state?.chatId || "chat_01",
     partnerId: location.state?.opponentName || "상대방",
     itemTitle: location.state?.postTitle || "물품 정보 없음",
-    initialStatus: "REGISTERED"
+    initialStatus: "MATCHING"
   };
 
-  // 물품 상태 관리 (진행중 REGISTERED -> 인도완료 DELIVERED)
+  // 물품 상태 관리 (진행중 MATCHING -> 인도완료 DELIVERED)
   const [itemStatus, setItemStatus] = useState(chatRoomInfo.initialStatus);
 
   // 채팅 메시지 내역 상태 관리
