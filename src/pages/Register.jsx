@@ -5,37 +5,44 @@ import Layout from '../components/Layout';
 const RegisterPage = () => {
   const navigate = useNavigate();
 
-  // 1. 입력값 상태 관리
+  // 1. 입력값 상태 관리 (email -> studentId로 변경)
   const [formData, setFormData] = useState({
-    email: '',
+    studentId: '', 
     userId: '',
     password: '',
     confirmPassword: ''
   });
 
   // 2. 중복 확인 통과 여부 상태 관리
-  const [isEmailChecked, setIsEmailChecked] = useState(false);
+  const [isStudentIdChecked, setIsStudentIdChecked] = useState(false);
   const [isIdChecked, setIsIdChecked] = useState(false);
 
-  // 입력창 수정 시 처리 (값을 바꾸면 중복 확인을 다시 하도록 false 처리)
+  // 입력창 수정 시 처리
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
 
-    if (name === 'email') setIsEmailChecked(false);
-    if (name === 'userId') setIsIdChecked(false);
+    // 💡 학번 입력란일 경우: 숫자가 아닌 모든 문자를 빈 문자열로 치환하여 숫자만 남김
+    if (name === 'studentId') {
+      const onlyNumbers = value.replace(/[^0-9]/g, '');
+      setFormData({ ...formData, [name]: onlyNumbers });
+      setIsStudentIdChecked(false); // 값이 바뀌면 중복확인 초기화
+    } else {
+      setFormData({ ...formData, [name]: value });
+      if (name === 'userId') setIsIdChecked(false);
+    }
   };
 
-  // 가상 이메일 중복 확인 함수
-  const checkEmailDuplicate = () => {
-    if (!formData.email.trim()) return alert('이메일을 입력해주세요.');
+  // 가상 학번 중복 확인 함수
+  const checkStudentIdDuplicate = () => {
+    if (!formData.studentId.trim()) return alert('학번을 입력해주세요.');
     
-    if (formData.email === 'chacha@daejeon.ac.kr') {
-      alert('이미 등록된 이메일입니다.');
-      setIsEmailChecked(false);
+    // 가상의 중복된 학번 예시 (예: 20261234)
+    if (formData.studentId === '20261234') {
+      alert('이미 가입된 학번입니다.');
+      setIsStudentIdChecked(false);
     } else {
-      alert('사용 가능한 이메일입니다.');
-      setIsEmailChecked(true);
+      alert('사용 가능한 학번입니다.');
+      setIsStudentIdChecked(true);
     }
   };
 
@@ -54,12 +61,12 @@ const RegisterPage = () => {
 
   // 3. 가입하기 버튼 활성화 조건식
   const isFormValid = 
-    formData.email.trim() &&
+    formData.studentId.trim() &&
     formData.userId.trim() &&
     formData.password &&
     formData.confirmPassword &&
     formData.password === formData.confirmPassword &&
-    isEmailChecked && 
+    isStudentIdChecked && 
     isIdChecked;      
 
   // 가입 버튼 클릭 시 처리
@@ -79,24 +86,25 @@ const RegisterPage = () => {
         <div className="space-y-6 mt-4">
           <h1 className="text-2xl font-bold text-gray-900 text-center mb-6">회원가입</h1>
           
-          {/* 이메일 입력 필드 + 중복확인 버튼 */}
+          {/* 학번 입력 필드 + 중복확인 버튼 */}
           <div className="space-y-1.5">
-            <label className="block text-gray-800 font-bold text-sm pl-1">Email</label>
+            <label className="block text-gray-800 font-bold text-sm pl-1">학번</label>
             <div className="flex space-x-2">
               <input 
-                name="email"
+                name="studentId"
+                inputMode="numeric"
                 className="flex-1 p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
                 type="text" 
-                placeholder="example1234@email.com"
-                value={formData.email}
+                placeholder="학번 (숫자만 입력)"
+                value={formData.studentId}
                 onChange={handleChange}
               />
               <button 
                 type="button"
-                onClick={checkEmailDuplicate}
-                className={`px-4 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${isEmailChecked ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'}`}
+                onClick={checkStudentIdDuplicate}
+                className={`px-4 rounded-xl text-xs font-bold transition-colors whitespace-nowrap ${isStudentIdChecked ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'}`}
               >
-                {isEmailChecked ? '확인 완료' : '중복 확인'}
+                {isStudentIdChecked ? '확인 완료' : '중복 확인'}
               </button>
             </div>
           </div>
