@@ -1,37 +1,46 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { authApi } from '../api'; 
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (userId.trim() === '' || password.trim() === '') {
-      alert('아이디와 비밀번호를 모두 입력해주세요!');
-    } else {
-      navigate('/home');
+      return alert('아이디와 비밀번호를 모두 입력해주세요!');
+    } 
+
+    try {
+      setIsLoading(true); // 로딩 시작
+      
+      // 가상 API 호출
+      const response = await authApi.login(userId, password);
+      
+      if (response.success) {
+        // 나중에 여기서 로컬 스토리지에 토큰(response.access_token)을 저장
+        navigate('/home');
+      }
+    } catch (error) {
+      alert(error.message); // 에러 메시지 띄우기
+    } finally {
+      setIsLoading(false); // 로딩 종료
     }
   };
 
   return (
     <Layout hideNav>
-    
       <div className="flex-1 flex flex-col justify-between px-6 py-10 bg-white h-full overflow-y-auto">
-        
-        {/* 1. 상단 콘텐츠 묶음 (로고 + 입력 필드들) */}
         <div className="space-y-10 mt-4">
-          
-          {/* 타이틀 로고 */}
           <h1 className="text-4xl font-extrabold text-center tracking-tight">
             <span className="text-[#FF8C69]">Match</span> <span className="text-[#FFC107]">Catch!!</span>
           </h1>
 
-          {/* 입력창 구역 */}
           <div className="w-full space-y-5">
-            {/* 아이디 */}
             <div className="space-y-1.5">
               <label className="block text-gray-700 font-bold text-sm pl-1">아이디</label>
               <input 
@@ -40,10 +49,10 @@ const LoginPage = () => {
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
                 placeholder="example1234"
+                disabled={isLoading}
               />
             </div>
 
-            {/* 비밀번호 */}
             <div className="space-y-1.5">
               <label className="block text-gray-700 font-bold text-sm pl-1">비밀번호</label>
               <input 
@@ -52,18 +61,21 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="****"
+                disabled={isLoading}
               />
             </div>
           </div>
         </div>
 
-        {/* 2. 하단 콘텐츠 묶음 (로그인 버튼 + 회원가입 링크) */}
         <div className="w-full space-y-4 mb-2">
           <button 
             onClick={handleLogin} 
-            className="w-full bg-[#FFC107] text-gray-900 py-4 rounded-xl text-base font-bold active:scale-[0.98] transition-all shadow-sm hover:brightness-95"
+            disabled={isLoading}
+            className={`w-full py-4 rounded-xl text-base font-bold transition-all shadow-sm ${
+              isLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#FFC107] text-gray-900 active:scale-[0.98] hover:brightness-95'
+            }`}
           >
-            로그인
+            {isLoading ? '로그인 중...' : '로그인'}
           </button>
 
           <div className="text-center">
@@ -72,7 +84,6 @@ const LoginPage = () => {
             </Link>
           </div>
         </div>
-
       </div>
     </Layout>
   );
