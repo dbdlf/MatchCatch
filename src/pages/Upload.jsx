@@ -11,71 +11,68 @@ function UploadPage() {
   const [mode] = useState(location.state?.mode || 'found'); 
   const [selectedImage, setSelectedImage] = useState(null);
   
-  // 💡 로딩 상태를 두 가지로 분리했습니다!
-  const [isImageAnalyzing, setIsImageAnalyzing] = useState(false); // 사진 올렸을 때 AI 분석 로딩
-  const [isSubmitting, setIsSubmitting] = useState(false);         // 최종 버튼 눌렀을 때 서버 통신 로딩
+  // 상태 관리: 분실물 사진 분석 로딩과 최종 제출 로딩 분리
+  const [isImageAnalyzing, setIsImageAnalyzing] = useState(false); 
+  const [isSubmitting, setIsSubmitting] = useState(false);         
 
   const [formData, setFormData] = useState({
-    title: '',        
-    content: '',      
-    keywords: '',     
+    title: '',        // 분실물 전용
+    content: '',      // 공통 (설명)
+    keywords: '',     // 분실물 전용
     location: '',     
     time: '',         
   });
 
-  // 사진 첨부 시 즉시 실행되는 AI 분석 로직
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setSelectedImage(previewUrl);
-      
-      // 사진 등록 즉시 분석 로딩 시작!
-      setIsImageAnalyzing(true);
-      
-      // AI 특징 추출 시뮬레이션
-      setTimeout(() => {
-        if (mode === 'found') {
-          setFormData(prev => ({
-            ...prev,
-            title: "삼색 고양이 인형",
-            content: "인형, 삼색, 고양이, 꼬리 짧음"
-          }));
-        } else {
-          setFormData(prev => ({
-            ...prev,
-            keywords: "인형, 삼색, 고양이"
-          }));
-        }
-        setIsImageAnalyzing(false); // 분석 완료 후 로딩 끝
-      }, 1500);
     }
   };
 
+  // 폼 유효성 검사 (습득물은 제목 검사 제외!)
   const isFormValid = () => {
     if (mode === 'found') {
-      return selectedImage && formData.title.trim() && formData.content.trim();
+      return selectedImage && formData.content.trim(); 
     } else {
       return formData.title.trim() && formData.content.trim() && formData.keywords.trim();
     }
   };
 
-  // 하단 등록/검색 버튼 클릭 시 실행되는 로직
   const handleSubmit = async () => {
     if (!isFormValid() || isSubmitting || isImageAnalyzing) return;
     
-    setIsSubmitting(true); // 최종 전송 로딩 시작
+    setIsSubmitting(true); 
 
     try {
       if (mode === 'found') {
-        const response = await itemApi.registerFoundItem({ ...formData, image: selectedImage });
+        // 습득물
+        const payload = {
+          description: formData.content,
+          found_location: formData.location,
+          found_time: formData.time,
+          image: selectedImage
+        };
+        const response = await itemApi.registerFoundItem(payload);
+        
         alert("습득물이 성공적으로 등록되었습니다.");
         navigate('/postdetail', {
           state: { postId: response.found_item_id, isAuthor: true, isFromUpload: true } 
         }); 
       } else {
-        const registerResponse = await itemApi.registerLostItem({ ...formData, image: selectedImage });
+        // 분실물
+        const payload = {
+          title: formData.title,
+          description: formData.content,
+          keywords: formData.keywords.split(',').map(k => k.trim()), // 배열로 변환
+          lost_location: formData.location,
+          lost_time: formData.time,
+          image: selectedImage
+        };
+        const registerResponse = await itemApi.registerLostItem(payload);
         const newLostItemId = registerResponse.lost_item_id; 
+        
         const searchResults = await itemApi.getSimilarFoundItems(newLostItemId);
 
         navigate('/searchresult', { 
@@ -99,7 +96,6 @@ function UploadPage() {
         className="hidden" 
       />
 
-      {/* 상단 헤더 */}
       <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100 bg-white">
         <button onClick={() => navigate(-1)} className="p-1" disabled={isSubmitting}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2">
@@ -119,13 +115,11 @@ function UploadPage() {
         </button>
       </div>
 
-      {/* 폼 입력 영역 */}
       <div className="flex-1 overflow-y-auto px-6 py-8 space-y-6 bg-white pb-24">
         <h2 className="text-center text-gray-400 text-sm font-medium">
-          {mode === 'found' ? '습득자_Post_Editor' : '분실자_Post_Editor'}
+          {mode === 'found' ? '습득물 등록하기' : '분실물 찾기'}
         </h2>
 
-        {/* 사진 선택 영역 */}
         <div 
           onClick={() => !isSubmitting && !isImageAnalyzing && fileInputRef.current.click()}
           className={`w-full aspect-video bg-gray-50 rounded-xl flex flex-col items-center justify-center border-2 border-dashed border-gray-200 overflow-hidden transition-colors ${
@@ -137,69 +131,79 @@ function UploadPage() {
           ) : (
             <div className="text-center">
               <span className="text-gray-400 font-bold block">
-                {mode === 'found' ? '사진 선택 (필수)' : '참고 사진 선택 (선택)'}
+                {mode === 'found' ? '사진 첨부 (필수)' : '참고 사진 첨부 (선택)'}
               </span>
-              <span className="text-gray-300 text-xs mt-1 block">(기기 앨범 열기)</span>
             </div>
           )}
         </div>
 
-        {/* 조건 분기 폼 */}
         <div className="space-y-4 relative">
+
+          {/* 분실물일 때만 나타나는 제목 입력창 */}
+          {mode === 'lost' && (
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-gray-400 pl-1">제목 (필수)</label>
+              <input 
+                type="text" 
+                placeholder="물품 제목을 입력하세요" 
+                disabled={isSubmitting}
+                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+                value={formData.title} 
+                onChange={e => setFormData({...formData, title: e.target.value})}
+              />
+            </div>
+          )}
           
-          {/* 사진 분석 중일 때 입력칸 위에 뜨는 블러 오버레이 */}
-          {isImageAnalyzing && (
-            <div className="absolute inset-0 bg-white/70 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded-xl border border-gray-100">
-              <div className="w-8 h-8 border-4 border-[#FFD18F] border-t-transparent rounded-full animate-spin mb-3"></div>
-              <p className="text-sm font-bold text-gray-700">AI가 이미지를 분석 중입니다...</p>
+          {/* 습득물, 분실물 공통: 상세 설명 */}
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-400 pl-1">상세 내용 (필수)</label>
+            <textarea 
+              placeholder="물품에 대한 상세 설명을 입력하세요" 
+              disabled={isSubmitting}
+              className="w-full h-32 p-4 bg-gray-50 rounded-xl outline-none resize-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+              value={formData.content} 
+              onChange={e => setFormData({...formData, content: e.target.value})}
+            />
+          </div>
+
+          {/* 분실물일 때만 나타나는 키워드 입력창 */}
+          {mode === 'lost' && (
+            <div className="space-y-1">
+              <label className="text-xs font-bold text-[#FF8C69] pl-1">AI 추천 특징 키워드 (쉼표 구분, 필수)</label>
+              <input 
+                type="text" 
+                placeholder="인형, 삼색, 지갑 등 매칭에 쓰일 키워드" 
+                disabled={isSubmitting}
+                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-[#FF8C69]/30 focus:border-[#FF8C69] focus:bg-white transition-all font-semibold text-gray-800"
+                value={formData.keywords} 
+                onChange={e => setFormData({...formData, keywords: e.target.value})}
+              />
             </div>
           )}
 
-          <input 
-            type="text" 
-            placeholder="제목 (필수)" 
-            disabled={isSubmitting || isImageAnalyzing}
-            className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] transition-all"
-            value={formData.title} 
-            onChange={e => setFormData({...formData, title: e.target.value})}
-          />
-          
-          <textarea 
-            placeholder={mode === 'found' ? "상세 설명 (필수)" : "잃어버린 물건의 상세 설명 (필수)"} 
-            disabled={isSubmitting || isImageAnalyzing}
-            className="w-full h-32 p-4 bg-gray-50 rounded-xl outline-none resize-none text-sm border border-gray-100 focus:border-[#FFD18F] transition-all"
-            value={formData.content} 
-            onChange={e => setFormData({...formData, content: e.target.value})}
-          />
-
-          {mode === 'lost' && (
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-400 pl-1">{mode === 'found' ? '습득 장소 (선택)' : '분실 예상 장소 (선택)'}</label>
             <input 
               type="text" 
-              placeholder="특징 키워드 (쉼표로 구분, 필수)" 
-              disabled={isSubmitting || isImageAnalyzing}
-              className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] transition-all"
-              value={formData.keywords} 
-              onChange={e => setFormData({...formData, keywords: e.target.value})}
+              placeholder="예: 충남대 정문 앞 커피숍" 
+              disabled={isSubmitting}
+              className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+              value={formData.location} 
+              onChange={e => setFormData({...formData, location: e.target.value})}
             />
-          )}
-
-          <input 
-            type="text" 
-            placeholder={mode === 'found' ? "습득 장소 (선택)" : "분실 예상 장소 (선택)"} 
-            disabled={isSubmitting || isImageAnalyzing}
-            className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] transition-all"
-            value={formData.location} 
-            onChange={e => setFormData({...formData, location: e.target.value})}
-          />
+          </div>
           
-          <input 
-            type="text" 
-            placeholder={mode === 'found' ? "습득 시간 (선택)" : "분실 예상 시간 (선택)"} 
-            disabled={isSubmitting || isImageAnalyzing}
-            className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] transition-all"
-            value={formData.time} 
-            onChange={e => setFormData({...formData, time: e.target.value})}
-          />
+          <div className="space-y-1">
+            <label className="text-xs font-bold text-gray-400 pl-1">{mode === 'found' ? '습득 시간 (선택)' : '분실 예상 시간 (선택)'}</label>
+            <input 
+              type="text" 
+              placeholder="예: 2026-05-19 14:30" 
+              disabled={isSubmitting}
+              className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+              value={formData.time} 
+              onChange={e => setFormData({...formData, time: e.target.value})}
+            />
+          </div>
         </div>
       </div>
     </Layout>
