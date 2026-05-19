@@ -48,7 +48,7 @@ const LoginPage = () => {
                 type="text" 
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-                placeholder="example1234"
+                placeholder="chacha"
                 disabled={isLoading}
               />
             </div>
@@ -60,7 +60,7 @@ const LoginPage = () => {
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="****"
+                placeholder="1234"
                 disabled={isLoading}
               />
             </div>
