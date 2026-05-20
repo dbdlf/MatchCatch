@@ -64,13 +64,13 @@ export const itemApi = {
     const items = getMockItems();
     const foundItems = items.filter(item => item.mode === 'found');
     
-    // DB에 있는 습득물들을 검색 결과 포맷으로 변환하여 반환
     return foundItems.map((item, index) => ({
       id: item.id,
       title: item.title,
+      content: item.content,
       keywords: item.keywords,
       img: item.imageUrl,
-      similarity_score: 95 - (index * 5), // 가상의 유사도 점수
+      similarity_score: 95 - (index * 5),
       location: item.location
     }));
   },

@@ -42,7 +42,7 @@ function MatchManagementPage() {
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gray-200 rounded-lg mr-3"></div>
                   <div>
-                    <h4 className="font-bold text-sm">파란색 지갑을 찾습니다</h4>
+                    <h4 className="font-bold text-sm">검정색 지갑을 찾습니다</h4>
                     <p className="text-[10px] text-gray-400">분실자: User1234</p>
                   </div>
                 </div>

@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout'; 
-import { itemApi } from '../api';
+import { itemApi, matchApi } from '../api';
 
 function PostDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const receivedPostId = location.state?.postId;
+  const receivedPostId = location.state?.postId; // 상대방 습득물 ID
   const receivedIsAuthor = location.state?.isAuthor || false;
   const isFromUpload = location.state?.isFromUpload || false;
+  
+  // SearchResultPage에서 넘겨준 내 분실물 ID 받기
+  const myLostItemId = location.state?.myLostItemId; 
 
   const [isAuthor] = useState(receivedIsAuthor);
-
   const [postData, setPostData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,7 +35,7 @@ function PostDetailPage() {
     };
 
     fetchPostDetail();
-  }, [receivedPostId, location.state?.updatedPostData]); // 수정 완료 후 돌아올 때도 다시 갱신
+  }, [receivedPostId, location.state?.updatedPostData]);
 
   if (!receivedPostId) {
     return (
@@ -56,9 +58,25 @@ function PostDetailPage() {
     );
   }
 
-  const handleSendRequest = () => {
+  // 매칭 요청 전송 함수
+  const handleSendRequest = async () => {
+    if (!myLostItemId) {
+      alert("내 분실물 정보가 확인되지 않습니다. 검색을 다시 진행해주세요.");
+      return;
+    }
+
     if (window.confirm("습득자에게 매칭 요청을 보내시겠습니까?")) {
-      alert("매칭 요청이 성공적으로 전송되었습니다.");
+      try {
+        // 내 분실물 ID와 상대방 습득물 ID를 서버로 전송
+        await matchApi.createMatch(myLostItemId, receivedPostId);
+        
+        alert("매칭 요청이 성공적으로 전송되었습니다!");
+        
+        // 요청 성공 후 매칭 관리 페이지로 이동시켜 자연스러운 흐름 유도
+        navigate('/matchmanagement'); 
+      } catch (error) {
+        alert("매칭 요청 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -130,7 +148,7 @@ function PostDetailPage() {
           </div>
           <div>
             <p className="font-bold text-gray-900">{postData.author.id}</p>
-            <p className="text-sm text-gray-500 font-medium">매너 온도 {postData.author.temperature}℃</p>
+            <p className="text-sm text-gray-500 font-medium">온도 {postData.author.temperature}℃</p>
           </div>
         </div>
       </div>

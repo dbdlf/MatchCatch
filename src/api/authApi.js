@@ -37,9 +37,9 @@ export const authApi = {
     const savedUsers = JSON.parse(localStorage.getItem('mockUsers')) || [];
     
     const newUser = {
-      id: Date.now(), // 임시 유저 번호
+      id: Date.now(), 
       studentId: userData.studentId,
-      userId: userData.userId,
+      userId: userData.username, 
       password: userData.password
     };
     
@@ -50,7 +50,7 @@ export const authApi = {
       success: true,
       user_id: newUser.id,
       student_id: userData.studentId,
-      username: userData.userId
+      username: userData.username
     };
   }
 };

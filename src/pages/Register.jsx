@@ -68,8 +68,13 @@ const RegisterPage = () => {
     try {
       setIsLoading(true); // 로딩 시작
       
-      // 가상 API 호출
-      await authApi.register(formData);
+      const payload = {
+        studentId: formData.studentId,
+        username: formData.userId,
+        password: formData.password
+      };
+
+      await authApi.register(payload);
       
       alert('회원가입이 완료되었습니다!');
       navigate('/'); // 성공 시 로그인 화면으로 이동

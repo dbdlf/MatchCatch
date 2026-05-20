@@ -135,30 +135,6 @@ function ProfileEditPage() {
           </div>
         </div>
 
-        {/* 학번 입력 필드 */}
-        <div className="space-y-2">
-          <label className="text-xs text-gray-400 font-bold block">학번</label>
-          <div className="flex space-x-2">
-            <input 
-              type="text" 
-              inputMode="numeric"
-              value={formData.studentId}
-              onChange={handleStudentIdChange}
-              className="flex-1 p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium"
-              placeholder="변경할 학번 (숫자만 입력)"
-            />
-            {/* 기존 학번과 다를 때만 중복 확인 버튼 표시 */}
-            {formData.studentId !== initialData.studentId && (
-              <button 
-                onClick={checkStudentIdDuplicate}
-                className={`px-3 py-2 rounded-lg text-xs font-bold transition-colors ${isStudentIdChecked ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-              >
-                {isStudentIdChecked ? '확인 완료' : '중복 확인'}
-              </button>
-            )}
-          </div>
-        </div>
-
         {/* 새 비밀번호 입력 필드 */}
         <div className="space-y-2">
           <label className="text-xs text-gray-400 font-bold block">새 비밀번호</label>
@@ -167,7 +143,7 @@ function ProfileEditPage() {
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium"
-            placeholder="변경할 새 비밀번호 입력 (선택)"
+            placeholder="변경할 새 비밀번호 입력"
           />
         </div>
 

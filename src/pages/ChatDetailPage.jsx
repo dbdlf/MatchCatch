@@ -7,16 +7,17 @@ function ChatDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 이전 페이지(채팅 목록)에서 넘겨준 고유 정보 (채팅방마다 다름)
   const chatRoomInfo = {
-    id: location.state?.chatId || 1, 
-    partnerId: location.state?.opponentName || "상대방",
+    chatRoomId: location.state?.chatRoomId || 1,        // 채팅 내역 조회용 ID
+    matchId: location.state?.matchId || 1,              // 인도 완료 및 후기 작성용 ID
+    partnerName: location.state?.opponentName || "상대방", // 화면에 보여줄 닉네임
+    partnerId: location.state?.opponentId || "default_target_id", // 유저 ID
     itemTitle: location.state?.postTitle || "물품 정보 없음",
     itemImg: location.state?.postImg || "https://via.placeholder.com/50",
   };
 
   // 상태 관리
-  const [itemStatus, setItemStatus] = useState("MATCHING"); // 매칭 성사 시 초기 상태는 무조건 MATCHING
+  const [itemStatus, setItemStatus] = useState("MATCHING");
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -26,13 +27,11 @@ function ChatDetailPage() {
     const fetchChatData = async () => {
       try {
         setIsLoading(true);
-        // 서버에서 메시지 내역 불러오기
-        const response = await chatApi.getMessages(chatRoomInfo.id);
+        const response = await chatApi.getMessages(chatRoomInfo.chatRoomId);
         
-        // 서버 데이터를 프론트엔드 UI 포맷에 맞게 가공
         const formattedMessages = response.messages.map(msg => ({
           id: msg.message_id,
-          sender: msg.sender_id === 1 ? "me" : chatRoomInfo.partnerId, 
+          sender: msg.sender_id === 1 ? "me" : chatRoomInfo.partnerName, 
           text: msg.message,
           type: "TALK"
         }));
@@ -46,7 +45,7 @@ function ChatDetailPage() {
     };
 
     fetchChatData();
-  }, [chatRoomInfo.id, chatRoomInfo.partnerId]);
+  }, [chatRoomInfo.chatRoomId, chatRoomInfo.partnerName]);
 
   // 2. 메시지 전송 API 연동
   const handleSendMessage = async (e) => {
@@ -54,11 +53,10 @@ function ChatDetailPage() {
     if (!inputText.trim()) return;
 
     const currentText = inputText;
-    setInputText(""); // 입력창 미리 비우기 (UX 최적화)
+    setInputText("");
 
     try {
-      // 서버로 메시지 전송
-      const response = await chatApi.sendMessage(chatRoomInfo.id, currentText);
+      const response = await chatApi.sendMessage(chatRoomInfo.chatRoomId, currentText);
       
       const newMessage = {
         id: response.message_id,
@@ -70,7 +68,7 @@ function ChatDetailPage() {
       setMessages(prev => [...prev, newMessage]);
     } catch (error) {
       alert("메시지 전송에 실패했습니다.");
-      setInputText(currentText); // 실패 시 글자 복구
+      setInputText(currentText); 
     }
   };
 
@@ -79,10 +77,9 @@ function ChatDetailPage() {
     const confirm = window.confirm("물건을 성공적으로 전달받으셨나요? 상대방도 수락해야 '인도 완료' 처리됩니다.");
     if (confirm) {
       try {
-        // 서버에 인도 완료 API 호출
-        await matchApi.deliverMatch(chatRoomInfo.id);
+        await matchApi.deliverMatch(chatRoomInfo.matchId);
         
-        setItemStatus("DELIVERED"); // 상태 변경
+        setItemStatus("DELIVERED"); 
 
         const systemNotice = {
           id: `system_${Date.now()}`,
@@ -101,17 +98,15 @@ function ChatDetailPage() {
 
   return (
     <Layout hideNav>
-      {/* A. 상단 헤더 네비게이션 */}
       <div className="flex items-center px-4 py-4 border-b border-gray-100 bg-white">
         <button onClick={() => navigate(-1)} className="p-1 mr-2">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2">
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
-        <span className="font-bold text-lg">{chatRoomInfo.partnerId}</span>
+        <span className="font-bold text-lg">{chatRoomInfo.partnerName}</span>
       </div>
 
-      {/* B. 매칭 물품 정보 카드 (상단 고정) */}
       <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
         <div className="bg-white p-3 border border-gray-200 rounded-xl flex items-center shadow-sm">
           <div className="w-12 h-12 bg-gray-200 rounded-lg overflow-hidden mr-3">
@@ -136,7 +131,6 @@ function ChatDetailPage() {
         </div>
       </div>
 
-      {/* C. 채팅 메시지 영역 (스크롤 가능) */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 bg-white pb-24 relative">
         {isLoading ? (
           <div className="flex justify-center items-center h-full">
@@ -157,9 +151,10 @@ function ChatDetailPage() {
                       <button 
                         onClick={() => navigate('/review', {
                           state: {
-                            matchId: chatRoomInfo.id,
-                            opponentName: chatRoomInfo.partnerId,
-                            postTitle: chatRoomInfo.itemTitle
+                            matchId: chatRoomInfo.matchId,
+                            opponentName: chatRoomInfo.partnerName,
+                            postTitle: chatRoomInfo.itemTitle,
+                            targetUserId: chatRoomInfo.partnerId
                           }
                         })}
                         className="w-full bg-[#FFD18F] text-black text-xs font-bold py-2 rounded-xl hover:brightness-95 active:scale-[0.98] transition-all"
@@ -188,7 +183,6 @@ function ChatDetailPage() {
         )}
       </div>
 
-      {/* D. 하단 메시지 입력창 (고정) */}
       <form 
         onSubmit={handleSendMessage}
         className="p-4 border-t border-gray-100 bg-white absolute bottom-0 left-0 right-0"

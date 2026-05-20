@@ -10,17 +10,16 @@ function PostEditPage() {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // 상세 페이지에서 제대로 넘어오지 않았다면 뒤로가기
   const originalPost = location.state?.postData;
   if (!originalPost) {
     alert("게시글 정보가 없습니다.");
     navigate(-1);
   }
 
-  // 넘겨받은 DB 데이터로 폼 초기화
   const [formData, setFormData] = useState({
     title: originalPost.title || "",
     content: originalPost.content || "",
+    keywords: Array.isArray(originalPost.keywords) ? originalPost.keywords.join(', ') : (originalPost.keywords || ""), 
     location: originalPost.location || "",
     time: originalPost.time || "",
     imageUrl: originalPost.imageUrl || ""
@@ -34,7 +33,11 @@ function PostEditPage() {
     }
   };
 
-  const isFormValid = formData.imageUrl && formData.content.trim() && !isLoading && (originalPost.mode === 'found' || formData.title.trim());
+  const isFormValid = 
+    formData.imageUrl && 
+    formData.content.trim() && 
+    !isLoading && 
+    (originalPost.mode === 'found' || (formData.title.trim() && formData.keywords.trim()));
 
   const handleSubmit = async () => {
     if (!isFormValid) return;
@@ -45,24 +48,24 @@ function PostEditPage() {
 
     try {
       setIsLoading(true);
-      // 변경된 부분만 추출해서 API로 전송 (DB 업데이트)
+      
       const updateData = {
-        title: formData.title,
         content: formData.content,
         location: formData.location,
         time: formData.time,
         imageUrl: formData.imageUrl
       };
 
-      if (originalPost.mode === 'found') {
-        await itemApi.editFoundItem(originalPost.id, updateData);
-      } else {
+      if (originalPost.mode === 'lost') {
+        updateData.title = formData.title;
+        updateData.keywords = formData.keywords.split(',').map(k => k.trim()); 
         await itemApi.editLostItem(originalPost.id, updateData);
+      } else {
+        await itemApi.editFoundItem(originalPost.id, updateData);
       }
 
       alert("게시글 수정이 완료되었습니다!");
       
-      // 상세 페이지로 복귀
       navigate('/postdetail', {
         state: { postId: originalPost.id, isAuthor: true, updatedPostData: updateData }
       });
@@ -103,9 +106,16 @@ function PostEditPage() {
         )}
 
         <div className="space-y-2">
-          <label className="text-xs text-gray-400 font-bold block">내용 및 키워드 (필수)</label>
+          <label className="text-xs text-gray-400 font-bold block">상세 내용 (필수)</label>
           <textarea disabled={isLoading} value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="w-full h-28 p-3 bg-gray-100 rounded-lg outline-none resize-none text-sm font-medium border-l-4 border-[#FFD18F] disabled:opacity-50" />
         </div>
+
+        {originalPost.mode === 'lost' && (
+          <div className="space-y-2">
+            <label className="text-xs text-gray-400 font-bold block">특징 키워드 (쉼표 구분, 필수)</label>
+            <input type="text" disabled={isLoading} value={formData.keywords} onChange={e => setFormData({ ...formData, keywords: e.target.value })} placeholder="종류, 색깔, 모양 등" className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium border-l-4 border-[#FFD18F] disabled:opacity-50" />
+          </div>
+        )}
 
         <div className="space-y-2">
           <label className="text-xs text-gray-400 font-bold block">장소 (선택)</label>
