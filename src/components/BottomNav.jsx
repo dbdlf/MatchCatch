@@ -41,7 +41,7 @@ const BottomNav = () => {
         onClick={() => navigate('/profile', {
           state: { 
             isOwnProfile: true,
-            userId: "user1234"
+            userId: "차차"
           }
         })} 
         className="flex flex-col items-center justify-center w-16 h-16 transition-all active:scale-95"

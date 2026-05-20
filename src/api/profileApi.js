@@ -15,7 +15,7 @@ export const profileApi = {
   // 프로필 수정
   updateProfile: async (profileData) => {
     await delay(800);
-    console.log("🛠️ 서버로 전송된 프로필 수정 데이터:", profileData);
+    console.log("서버로 전송된 프로필 수정 데이터:", profileData);
     return {
       user_id: 1,
       username: profileData.username 

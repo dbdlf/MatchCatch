@@ -16,7 +16,7 @@ function ProfilePage() {
     // 가상 DB(로컬 스토리지)에서 전체 아이템 목록 가져오기
     let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
     
-    // 💡 고정 더미 데이터가 가상 DB에 없을 경우, 초기값으로 자동 주입 (상세 페이지 연동용)
+    // 고정 더미 데이터가 가상 DB에 없을 경우, 초기값으로 자동 주입 (상세 페이지 연동용)
     const hasDummy = mockItems.some(item => String(item.id).startsWith('dummy_'));
     if (!hasDummy) {
       const initialDummies = [
@@ -58,10 +58,10 @@ function ProfilePage() {
       localStorage.setItem('mockItems', JSON.stringify(mockItems));
     }
 
-    // 💡 진행 중인 활동 필터링 (고정 더미 + 새로 등록한 습득물/분실물 일괄 합산)
+    // 진행 중인 활동 필터링 (고정 더미 + 새로 등록한 습득물/분실물 일괄 합산)
     const ongoing = mockItems.filter(item => item.status === 'REGISTERED' || item.status === 'MATCHING');
     
-    // 💡 완료된 활동 필터링
+    // 완료된 활동 필터링
     const completed = mockItems.filter(item => item.status === 'DELIVERED');
 
     setUserData({
@@ -84,7 +84,6 @@ function ProfilePage() {
     });
   }, [receivedUserId]);
 
-  // 💡 더미 안내 문구를 없애고, 어떤 아이템이든 예외 없이 상세 페이지로 바로 이동시킵니다.
   const handleActivityClick = (activityId) => {
     navigate('/postdetail', {
       state: {
@@ -138,7 +137,7 @@ function ProfilePage() {
       <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between bg-white">
         <div className="flex items-center space-x-4">
           <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden">
-            <img src="https://via.placeholder.com/80" alt="프로필" />
+            <img src="/images/chacha.png" alt="프로필" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900">{userData.id}</h2>
