@@ -127,7 +127,7 @@ function PostDetailPage() {
 
         <div onClick={handleGoProfile} className="flex items-center p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100">
           <div className="w-16 h-16 bg-gray-300 rounded-full border-2 border-white shadow-sm overflow-hidden mr-4">
-            <img src="https://via.placeholder.com/64" alt="프로필" />
+            <img src="/images/chacha.png" alt="프로필" />
           </div>
           <div>
             <p className="font-bold text-gray-900">{postData.author.id}</p>
