@@ -13,16 +13,15 @@ function ProfilePage() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    // 가상 DB(로컬 스토리지)에서 전체 아이템 목록 가져오기
     let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
     
-    // 고정 더미 데이터가 가상 DB에 없을 경우, 초기값으로 자동 주입 (상세 페이지 연동용)
+    // 고정 더미 데이터 주입
     const hasDummy = mockItems.some(item => String(item.id).startsWith('dummy_'));
     if (!hasDummy) {
       const initialDummies = [
         {
           id: "dummy_1",
-          mode: "lost",
+          mode: "lost", // 더미 데이터 설정 유지
           status: "REGISTERED",
           title: "검은색 카드 지갑",
           content: "검은색 가죽 카드 지갑입니다.",
@@ -58,8 +57,11 @@ function ProfilePage() {
       localStorage.setItem('mockItems', JSON.stringify(mockItems));
     }
 
-    // 진행 중인 활동 필터링 (고정 더미 + 새로 등록한 습득물/분실물 일괄 합산)
-    const ongoing = mockItems.filter(item => item.status === 'REGISTERED' || item.status === 'MATCHING');
+    // 💡 수정 1: 진행 중인 활동 필터링 시 '분실물(lost)'은 제외하고 '습득물(found)'과 '고정 더미'만 남깁니다.
+    const ongoing = mockItems.filter(item => 
+      (item.status === 'REGISTERED' || item.status === 'MATCHING') && 
+      (item.mode === 'found' || String(item.id).startsWith('dummy_'))
+    );
     
     // 완료된 활동 필터링
     const completed = mockItems.filter(item => item.status === 'DELIVERED');
@@ -67,14 +69,15 @@ function ProfilePage() {
     setUserData({
       id: receivedUserId,
       temperature: 36.5,
+      // 💡 수정 2: '습득물:' 문구를 삭제하고 내용물만 잘라서 보여줍니다.
       ongoingActivities: ongoing.map(item => ({
         id: item.id,
-        title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `습득물: ${item.content.substring(0, 10)}...` : item.title),
+        title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
         img: item.imageUrl
       })),
       completedActivities: completed.map(item => ({
         id: item.id,
-        title: item.id === "dummy_2" ? "흰색 텀블러" : item.id === "dummy_3" ? "갤럭시 버즈 프로" : (item.mode === 'found' ? `습득물: ${item.content.substring(0, 10)}...` : item.title),
+        title: item.id === "dummy_2" ? "흰색 텀블러" : item.id === "dummy_3" ? "갤럭시 버즈 프로" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
         img: item.imageUrl
       })),
       reviews: [
@@ -136,11 +139,18 @@ function ProfilePage() {
       {/* 프로필 정보 영역 */}
       <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between bg-white">
         <div className="flex items-center space-x-4">
-          <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden">
-            <img src="/images/chacha.png" alt="프로필" />
+          <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
+            <img 
+              src={location.state?.userImg || "/images/profile.png"} 
+              alt="프로필 사진" 
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+              }}
+            />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{userData.id}</h2>
+            <h2 className="text-xl font-bold text-gray-900">{location.state?.userId || userData?.id || "차차"}</h2>
           </div>
         </div>
 
@@ -187,7 +197,6 @@ function ProfilePage() {
                 className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
               >
                 <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
-                {/* 💡 line-through 클래스를 제거하여 완료 항목에 취소선이 생기지 않도록 고쳤습니다! */}
                 <span className="text-sm font-bold text-gray-800">{item.title}</span>
               </div>
             ))
