@@ -169,12 +169,12 @@ function UploadPage() {
           {/* 분실물일 때만 나타나는 키워드 입력창 */}
           {mode === 'lost' && (
             <div className="space-y-1">
-              <label className="text-xs font-bold text-[#FF8C69] pl-1">AI 추천 특징 키워드 (쉼표 구분, 필수)</label>
+              <label className="text-xs font-bold text-gray-400 pl-1">특징 키워드 (쉼표 구분, 필수)</label>
               <input 
                 type="text" 
-                placeholder="인형, 삼색, 지갑 등 매칭에 쓰일 키워드" 
+                placeholder="종류, 색깔, 모양 등" 
                 disabled={isSubmitting}
-                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-[#FF8C69]/30 focus:border-[#FF8C69] focus:bg-white transition-all font-semibold text-gray-800"
+                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all font-semibold text-gray-800"
                 value={formData.keywords} 
                 onChange={e => setFormData({...formData, keywords: e.target.value})}
               />
