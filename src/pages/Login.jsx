@@ -22,7 +22,6 @@ const LoginPage = () => {
       const response = await authApi.login(userId, password);
       
       if (response.success) {
-        // 나중에 여기서 로컬 스토리지에 토큰(response.access_token)을 저장
         navigate('/home');
       }
     } catch (error) {

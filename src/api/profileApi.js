@@ -7,7 +7,7 @@ export const profileApi = {
     return {
       user_id: 1,
       student_id: "20261234",
-      username: "차차", // 프론트엔드의 id
+      username: "차차",
       temperature: 36.5
     };
   },

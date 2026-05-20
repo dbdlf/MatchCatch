@@ -62,7 +62,7 @@ function PostEditPage() {
 
       alert("게시글 수정이 완료되었습니다!");
       
-      // 상세 페이지로 복귀 (updatedPostData 힌트를 주어 새로고침 유도)
+      // 상세 페이지로 복귀
       navigate('/postdetail', {
         state: { postId: originalPost.id, isAuthor: true, updatedPostData: updateData }
       });

@@ -31,7 +31,7 @@ function UploadPage() {
     }
   };
 
-  // 폼 유효성 검사 (습득물은 제목 검사 제외!)
+  // 폼 유효성 검사 (습득물은 제목 검사 제외)
   const isFormValid = () => {
     if (mode === 'found') {
       return selectedImage && formData.content.trim(); 
@@ -65,7 +65,7 @@ function UploadPage() {
         const payload = {
           title: formData.title,
           description: formData.content,
-          keywords: formData.keywords.split(',').map(k => k.trim()), // 배열로 변환
+          keywords: formData.keywords.split(',').map(k => k.trim()),
           lost_location: formData.location,
           lost_time: formData.time,
           image: selectedImage

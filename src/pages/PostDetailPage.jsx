@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout'; 
-import { itemApi } from '../api'; // 💡 상세 조회용 API 추가
+import { itemApi } from '../api';
 
 function PostDetailPage() {
   const navigate = useNavigate();
@@ -12,12 +12,11 @@ function PostDetailPage() {
   const isFromUpload = location.state?.isFromUpload || false;
 
   const [isAuthor] = useState(receivedIsAuthor);
-  
-  // 💡 더미 데이터 삭제, 초기값을 null로 설정
+
   const [postData, setPostData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 💡 컴포넌트 마운트 시 가상 DB에서 데이터 불러오기
+  // 컴포넌트 마운트 시 가상 DB에서 데이터 불러오기
   useEffect(() => {
     const fetchPostDetail = async () => {
       if (!receivedPostId) return;
