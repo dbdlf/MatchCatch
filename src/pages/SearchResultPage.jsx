@@ -59,6 +59,9 @@ function SearchResultPage() {
           similarity_score: 80.5
         }
       ];
+
+      // 검색 결과 더미 데이터 사용
+      const baseResults = initialResults.length > 0 ? initialResults : dummyData;
       
       // 핵심 1: 유사도 점수(similarity_score)가 높은 순으로 내림차순 정렬
       const sortedResults = [...initialResults].sort((a, b) => {
