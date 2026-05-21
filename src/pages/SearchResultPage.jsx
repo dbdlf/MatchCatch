@@ -16,6 +16,49 @@ function SearchResultPage() {
   useEffect(() => {
     // AI 로딩 효과 (UX를 위해 1.5초 지연)
     const timer = setTimeout(() => {
+
+      const dummyData = [
+        {
+          id: "dummy_search_1",
+          mode: "found",
+          content: "요리사 토끼 인형 키링입니다.",
+          keywords: "토끼, 노란색, 인형, 키링, 요리사",
+          img: "/images/usagi1.png",
+          similarity_score: 75.0
+        },
+        {
+          id: "dummy_search_2",
+          mode: "found",
+          content: "어린시절 토끼 인형입니다.",
+          keywords: "토끼, 노란색, 인형, 키링, 아기",
+          img: "/images/usagi2.png",
+          similarity_score: 75.0
+        },
+        {
+          id: "dummy_search_3",
+          mode: "found",
+          content: "양배추 안에 토끼가 들어있는 인형 키링입니다",
+          keywords: "토끼, 노란색, 인형, 키링, 양배추, 아기",
+          img: "/images/usagi3.png",
+          similarity_score: 45.2
+        },
+        {
+          id: "dummy_search_4",
+          mode: "found",
+          content: "빵을 들고 있는 토끼 인형입니다.",
+          keywords: "토끼, 노란색, 인형, 키링, 베이커리, 빵집",
+          img: "/images/usagi4a.png",
+          similarity_score: 99.5
+        },
+        {
+          id: "dummy_search_5",
+          mode: "found",
+          content: "토끼 인형입니다.",
+          keywords: "토끼, 노란색, 인형, 키링",
+          img: "/images/usagi5.png",
+          similarity_score: 80.5
+        }
+      ];
       
       // 핵심 1: 유사도 점수(similarity_score)가 높은 순으로 내림차순 정렬
       const sortedResults = [...initialResults].sort((a, b) => {
