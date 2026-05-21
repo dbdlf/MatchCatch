@@ -7,6 +7,8 @@ const BottomNav = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  const isProfileActive = location.pathname === '/profile' && location.state?.isOwnProfile !== false;
+
   return (
     <div className="absolute bottom-0 left-0 w-full h-[80px] bg-white border-t border-gray-100 flex justify-around items-center z-50">
       
@@ -41,15 +43,16 @@ const BottomNav = () => {
         onClick={() => navigate('/profile', {
           state: { 
             isOwnProfile: true,
-            userId: "차차"
+            userId: "차차",
+            userImg: "/images/profile.png"
           }
         })} 
         className="flex flex-col items-center justify-center w-16 h-16 transition-all active:scale-95"
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={isActive('/profile') ? "#FFD18F" : "#9CA3AF"} strokeWidth="2.5">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={isProfileActive ? "#FFD18F" : "#9CA3AF"} strokeWidth="2.5">
           <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
         </svg>
-        <span className={`text-[11px] mt-1.5 ${isActive('/profile') ? 'text-[#FFD18F] font-bold' : 'text-gray-400 font-medium'}`}>
+        <span className={`text-[11px] mt-1.5 ${isProfileActive ? 'text-[#FFD18F] font-bold' : 'text-gray-400 font-medium'}`}>
           프로필
         </span>
       </button>
