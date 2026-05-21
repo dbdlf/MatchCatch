@@ -18,11 +18,11 @@ export const itemApi = {
       location: formData.found_location,
       time: formData.found_time,
       imageUrl: formData.image || "https://via.placeholder.com/400",
-      keywords: "AI, 자동, 추출, 키워드", // 백엔드 AI가 추출했다고 가정
+      keywords: "AI, 자동, 추출, 키워드", 
       author: { id: "차차", temperature: 36.5 }
     };
     items.push(newItem);
-    saveMockItems(items); // DB 저장
+    saveMockItems(items); 
     
     return { success: true, found_item_id: newItem.id, status: "REGISTERED" };
   },
@@ -37,14 +37,14 @@ export const itemApi = {
       status: 'REGISTERED',
       title: formData.title,
       content: formData.description,
-      keywords: formData.keywords.join(', '),
+      keywords: Array.isArray(formData.keywords) ? formData.keywords.join(', ') : formData.keywords,
       location: formData.lost_location,
       time: formData.lost_time,
       imageUrl: formData.image || "https://via.placeholder.com/400",
       author: { id: "차차", temperature: 36.5 }
     };
     items.push(newItem);
-    saveMockItems(items); // DB 저장
+    saveMockItems(items); 
     
     return { success: true, lost_item_id: newItem.id, status: "REGISTERED" };
   },
@@ -67,10 +67,11 @@ export const itemApi = {
     return foundItems.map((item, index) => ({
       id: item.id,
       title: item.title,
-      content: item.content,
+      content: item.content, 
       keywords: item.keywords,
       img: item.imageUrl,
-      similarity_score: 95 - (index * 5),
+      // 💡 핵심 해결 포인트: 원래 아이템에 점수가 있으면 그걸 유지하고, 새로 등록된 애들만 임의로 점수 부여!
+      similarity_score: item.similarity_score || Math.max(95 - (index * 5), 10),
       location: item.location
     }));
   },
@@ -81,7 +82,7 @@ export const itemApi = {
     const items = getMockItems();
     const index = items.findIndex(item => item.id === itemId);
     if (index > -1) {
-      items[index] = { ...items[index], ...formData }; // 기존 데이터 덮어쓰기
+      items[index] = { ...items[index], ...formData }; 
       saveMockItems(items);
     }
     return { success: true, item_id: itemId };
@@ -93,7 +94,7 @@ export const itemApi = {
     const items = getMockItems();
     const index = items.findIndex(item => item.id === itemId);
     if (index > -1) {
-      items[index] = { ...items[index], ...formData }; // 기존 데이터 덮어쓰기
+      items[index] = { ...items[index], ...formData }; 
       saveMockItems(items);
     }
     return { success: true, item_id: itemId };
