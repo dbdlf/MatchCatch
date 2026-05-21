@@ -6,7 +6,6 @@ function SearchResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // UploadPage에서 넘겨준 실제 검색 결과와 내 분실물 ID 받기
   const myLostItemId = location.state?.lostItemId;
   const initialResults = location.state?.results || []; 
 
@@ -14,7 +13,6 @@ function SearchResultPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // AI 로딩 효과 (UX를 위해 1.5초 지연)
     const timer = setTimeout(() => {
 
       const dummyData = [
@@ -24,7 +22,10 @@ function SearchResultPage() {
           content: "요리사 토끼 인형 키링입니다.",
           keywords: "토끼, 노란색, 인형, 키링, 요리사",
           img: "/images/usagi1.png",
-          similarity_score: 57.5
+          imageUrl: "/images/usagi1.png", 
+          similarity_score: 57.5,
+          status: "REGISTERED",
+          author: { id: "익명", temperature: 36.5 }
         },
         {
           id: "dummy_search_2",
@@ -32,7 +33,10 @@ function SearchResultPage() {
           content: "어린시절 토끼 인형입니다.",
           keywords: "토끼, 노란색, 인형, 키링, 아기",
           img: "/images/usagi2.png",
-          similarity_score: 60.0
+          imageUrl: "/images/usagi2.png",
+          similarity_score: 60.0,
+          status: "REGISTERED",
+          author: { id: "익명", temperature: 36.5 }
         },
         {
           id: "dummy_search_3",
@@ -40,7 +44,10 @@ function SearchResultPage() {
           content: "양배추 안에 토끼가 들어있는 인형 키링입니다",
           keywords: "토끼, 노란색, 인형, 키링, 양배추, 아기",
           img: "/images/usagi3.png",
-          similarity_score: 45.2
+          imageUrl: "/images/usagi3.png",
+          similarity_score: 45.2,
+          status: "REGISTERED",
+          author: { id: "익명", temperature: 36.5 }
         },
         {
           id: "dummy_search_4",
@@ -48,7 +55,10 @@ function SearchResultPage() {
           content: "빵을 들고 있는 토끼 인형입니다.",
           keywords: "토끼, 노란색, 인형, 키링, 베이커리, 빵집",
           img: "/images/usagi4a.png",
-          similarity_score: 99.5
+          imageUrl: "/images/usagi4a.png",
+          similarity_score: 99.5,
+          status: "REGISTERED",
+          author: { id: "익명", temperature: 36.5 }
         },
         {
           id: "dummy_search_5",
@@ -56,18 +66,28 @@ function SearchResultPage() {
           content: "토끼 인형입니다.",
           keywords: "토끼, 노란색, 인형, 키링",
           img: "/images/usagi5.png",
-          similarity_score: 80.5
+          imageUrl: "/images/usagi5.png",
+          similarity_score: 80.5,
+          status: "REGISTERED",
+          author: { id: "익명", temperature: 36.5 }
         }
       ];
 
-      // 검색 결과 더미 데이터 사용
+      // 상세페이지 에러 방지를 위해 가상 DB(localStorage)에 더미 데이터 강제 주입
+      let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
+      const hasSearchDummy = mockItems.some(item => item.id === 'dummy_search_1');
+      if (!hasSearchDummy) {
+        mockItems = [...mockItems, ...dummyData];
+        localStorage.setItem('mockItems', JSON.stringify(mockItems));
+      }
+
+      // 나중에 백엔드와 연결할 때, initialResults에 결과가 없으면 이 더미를 띄우도록 되어있습니다.
       const baseResults = initialResults.length > 0 ? initialResults : dummyData;
       
-      // 핵심 1: 유사도 점수(similarity_score)가 높은 순으로 내림차순 정렬
       const sortedResults = [...baseResults].sort((a, b) => {
         const scoreA = a.similarity_score || 0;
         const scoreB = b.similarity_score || 0;
-        return scoreB - scoreA; // 내림차순 정렬
+        return scoreB - scoreA; 
       });
 
       setResults(sortedResults);
@@ -79,7 +99,6 @@ function SearchResultPage() {
 
   return (
     <Layout>
-      {/* 상단 헤더 */}
       <div className="flex items-center px-6 py-6 border-b border-gray-100 bg-white">
         <h1 className="text-xl font-bold relative">
           검색결과
@@ -87,7 +106,6 @@ function SearchResultPage() {
         </h1>
       </div>
 
-      {/* 컨텐츠 영역 */}
       <div className="flex-1 overflow-y-auto px-6 py-8 pb-24 bg-white">
         {isLoading ? (
           <div className="h-full flex flex-col items-center justify-center space-y-4">
@@ -95,40 +113,39 @@ function SearchResultPage() {
             <p className="text-gray-500 font-medium">AI가 유사한 물품을 분석 중입니다...</p>
           </div>
         ) : results.length > 0 ? (
-          /* Case 1: 검색 결과가 있는 경우 */
           <div className="space-y-4">
             {results.map((item) => (
-              <div key={item.id} className="relative flex p-4 border border-gray-200 rounded-xl items-center bg-white shadow-sm transition-transform active:scale-[0.98] overflow-hidden">
+              <div key={item.id} className="relative flex p-4 border border-gray-200 rounded-xl items-start bg-white shadow-sm transition-transform active:scale-[0.98] overflow-hidden">
                 
-                {/* 핵심 2: 유사도 점수 시각화 뱃지 (우측 상단 고정) */}
-                <div className="absolute top-0 right-0 bg-[#FFD18F] px-3 py-1.5 rounded-bl-xl font-bold text-xs text-gray-900 shadow-sm z-10">
+                <div className="absolute top-0 right-0 bg-[#FFD18F] px-3 py-1 rounded-bl-xl font-bold text-[10px] text-gray-900 shadow-sm z-10">
                   일치율 {item.similarity_score ? item.similarity_score.toFixed(1) : '0.0'}%
                 </div>
 
-                <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                <div className="w-24 h-24 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0 mt-2">
                   <img src={item.img} alt="습득물 사진" className="w-full h-full object-cover" />
                 </div>
                 
-                <div className="ml-4 flex-1 flex flex-col justify-between h-24">
-                  <div className="pr-16">
-                    <h4 className="font-bold text-base text-gray-900 truncate">
+                <div className="ml-4 flex-1 flex flex-col justify-between min-w-0 min-h-[6.5rem]">
+                  <div className="pt-5">
+                    <h4 className="font-bold text-sm text-gray-900 break-keep line-clamp-2 leading-snug">
                       {(!item.title || item.title === '습득물 (제목 없음)') && item.content 
-                        ? `${item.content.substring(0, 15)}...` 
+                        ? item.content 
                         : item.title}
                     </h4>
-                    <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+                    <p className="text-[11px] text-gray-500 mt-1.5 line-clamp-2 leading-tight">
                       <span className="font-semibold">키워드:</span> {item.keywords}
                     </p>
                   </div>
+
                   <button 
                     onClick={() => navigate('/postdetail', { 
                       state: { 
                         postId: item.id,   
                         isAuthor: false,   
-                        myLostItemId: myLostItemId // 이전 스텝에서 반영한 내 분실물 ID 릴레이
+                        myLostItemId: myLostItemId 
                       } 
                     })}
-                    className="self-end bg-gray-900 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-800 transition-colors"
+                    className="self-end mt-3 bg-gray-900 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-gray-800 transition-colors"
                   >
                     상세보기
                   </button>
@@ -137,7 +154,7 @@ function SearchResultPage() {
             ))}
           </div>
         ) : (
-          /* Case 2: 검색 결과가 없는 경우 */
+          /* 결과 없음 화면 */
           <div className="h-full flex flex-col items-center justify-center text-center px-6 space-y-6">
             <div className="space-y-4">
               <p className="text-2xl font-bold text-gray-800 leading-snug">
