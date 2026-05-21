@@ -16,12 +16,12 @@ function ProfilePage() {
     let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
     
     // 고정 더미 데이터 주입
-    const hasDummy = mockItems.some(item => String(item.id).startsWith('dummy_'));
+    const hasDummy = mockItems.some(item => String(item.id).startsWith('dummy_1'));
     if (!hasDummy) {
       const initialDummies = [
         {
           id: "dummy_1",
-          mode: "lost", // 더미 데이터 설정 유지
+          mode: "lost", 
           status: "REGISTERED",
           title: "검은색 카드 지갑",
           content: "검은색 가죽 카드 지갑입니다.",
@@ -57,19 +57,25 @@ function ProfilePage() {
       localStorage.setItem('mockItems', JSON.stringify(mockItems));
     }
 
-    // 💡 수정 1: 진행 중인 활동 필터링 시 '분실물(lost)'은 제외하고 '습득물(found)'과 '고정 더미'만 남깁니다.
+    // 💡 현재 보고 있는 프로필의 주인공 ID 설정 ("내 프로필"이면 "차차", 남의 프로필이면 넘겨받은 ID)
+    const profileOwnerId = isOwnProfile ? "차차" : receivedUserId;
+
+    // 💡 수정 1: 진행 중인 활동에서 '현재 프로필 주인'이 쓴 글만 필터링하도록 조건 추가 (item.author?.id 확인)
     const ongoing = mockItems.filter(item => 
+      item.author?.id === profileOwnerId && 
       (item.status === 'REGISTERED' || item.status === 'MATCHING') && 
       (item.mode === 'found' || String(item.id).startsWith('dummy_'))
     );
     
-    // 완료된 활동 필터링
-    const completed = mockItems.filter(item => item.status === 'DELIVERED');
+    // 💡 수정 2: 완료된 활동 역시 '현재 프로필 주인'이 쓴 글만 보이도록 조건 추가
+    const completed = mockItems.filter(item => 
+      item.author?.id === profileOwnerId &&
+      item.status === 'DELIVERED'
+    );
 
     setUserData({
-      id: receivedUserId,
+      id: profileOwnerId,
       temperature: 36.5,
-      // 💡 수정 2: '습득물:' 문구를 삭제하고 내용물만 잘라서 보여줍니다.
       ongoingActivities: ongoing.map(item => ({
         id: item.id,
         title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
@@ -85,7 +91,7 @@ function ProfilePage() {
         { id: 2, type: "POSITIVE", content: "덕분에 소중한 물건을 찾았습니다. 감사합니다." }
       ]
     });
-  }, [receivedUserId]);
+  }, [receivedUserId, isOwnProfile]);
 
   const handleActivityClick = (activityId) => {
     navigate('/postdetail', {
@@ -141,7 +147,7 @@ function ProfilePage() {
         <div className="flex items-center space-x-4">
           <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
             <img 
-              src={location.state?.userImg || "/images/chacha.png"} 
+              src={isOwnProfile ? (location.state?.userImg || "/images/profile.png") : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} 
               alt="프로필 사진" 
               className="w-full h-full object-cover"
               onError={(e) => {
@@ -150,7 +156,7 @@ function ProfilePage() {
             />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">{location.state?.userId || userData?.id || "차차"}</h2>
+            <h2 className="text-xl font-bold text-gray-900">{userData.id}</h2>
           </div>
         </div>
 
@@ -166,25 +172,23 @@ function ProfilePage() {
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 pb-24 bg-white">
         
         {/* 1. 활동 내역 (진행 중) */}
-        {isOwnProfile && (
-          <section className="space-y-4">
-            <h3 className="font-bold text-lg">활동내역 (진행중)</h3>
-            {userData.ongoingActivities.length > 0 ? (
-              userData.ongoingActivities.map(item => (
-                <div 
-                  key={item.id} 
-                  onClick={() => handleActivityClick(item.id)}
-                  className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
-                >
-                  <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
-                  <span className="text-sm font-bold text-gray-800">{item.title}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-xs text-gray-400 py-2">진행 중인 내역이 없습니다.</p>
-            )}
-          </section>
-        )}
+        <section className="space-y-4">
+          <h3 className="font-bold text-lg">활동내역 (진행중)</h3>
+          {userData.ongoingActivities.length > 0 ? (
+            userData.ongoingActivities.map(item => (
+              <div 
+                key={item.id} 
+                onClick={() => handleActivityClick(item.id)}
+                className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
+              >
+                <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
+                <span className="text-sm font-bold text-gray-800">{item.title}</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-xs text-gray-400 py-2">진행 중인 내역이 없습니다.</p>
+          )}
+        </section>
 
         {/* 2. 활동 내역 (완료) */}
         <section className="space-y-4">
