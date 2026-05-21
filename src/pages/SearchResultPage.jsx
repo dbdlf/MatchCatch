@@ -64,7 +64,7 @@ function SearchResultPage() {
       const baseResults = initialResults.length > 0 ? initialResults : dummyData;
       
       // 핵심 1: 유사도 점수(similarity_score)가 높은 순으로 내림차순 정렬
-      const sortedResults = [...initialResults].sort((a, b) => {
+      const sortedResults = [...baseResults].sort((a, b) => {
         const scoreA = a.similarity_score || 0;
         const scoreB = b.similarity_score || 0;
         return scoreB - scoreA; // 내림차순 정렬
