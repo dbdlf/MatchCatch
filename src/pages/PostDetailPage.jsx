@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react'; 
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout'; 
-import { itemApi, matchApi } from '../api';
+import { itemApi, matchApi } from '../api'; 
 
 function PostDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const receivedPostId = location.state?.postId; // 상대방 습득물 ID
+  const receivedPostId = location.state?.postId; 
   const receivedIsAuthor = location.state?.isAuthor || false;
   const isFromUpload = location.state?.isFromUpload || false;
   
-  // SearchResultPage에서 넘겨준 내 분실물 ID 받기
   const myLostItemId = location.state?.myLostItemId; 
 
   const [isAuthor] = useState(receivedIsAuthor);
   const [postData, setPostData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 컴포넌트 마운트 시 가상 DB에서 데이터 불러오기
   useEffect(() => {
     const fetchPostDetail = async () => {
       if (!receivedPostId) return;
@@ -58,7 +56,6 @@ function PostDetailPage() {
     );
   }
 
-  // 매칭 요청 전송 함수
   const handleSendRequest = async () => {
     if (!myLostItemId) {
       alert("내 분실물 정보가 확인되지 않습니다. 검색을 다시 진행해주세요.");
@@ -67,12 +64,9 @@ function PostDetailPage() {
 
     if (window.confirm("습득자에게 매칭 요청을 보내시겠습니까?")) {
       try {
-        // 내 분실물 ID와 상대방 습득물 ID를 서버로 전송
         await matchApi.createMatch(myLostItemId, receivedPostId);
         
         alert("매칭 요청이 성공적으로 전송되었습니다!");
-        
-        // 요청 성공 후 매칭 관리 페이지로 이동시켜 자연스러운 흐름 유도
         navigate('/matchmanagement'); 
       } catch (error) {
         alert("매칭 요청 중 오류가 발생했습니다.");
@@ -143,12 +137,16 @@ function PostDetailPage() {
         </div>
 
         <div onClick={handleGoProfile} className="flex items-center p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100">
-          <div className="w-16 h-16 bg-gray-300 rounded-full border-2 border-white shadow-sm overflow-hidden mr-4">
-            <img src="/images/chacha.png" alt="프로필" />
+          {/* 하드코딩된 이미지를 지우고, 데이터가 있을 때만 띄우거나 기본 회색 배경을 씁니다 */}
+          <div className="w-16 h-16 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden mr-4 flex items-center justify-center">
+            {postData.author.profileImg && (
+              <img src={postData.author.profileImg} alt="프로필" className="w-full h-full object-cover" />
+            )}
           </div>
+          
           <div>
             <p className="font-bold text-gray-900">{postData.author.id}</p>
-            <p className="text-sm text-gray-500 font-medium">온도 {postData.author.temperature}℃</p>
+            <p className="text-sm text-gray-500 font-medium">매너 온도 {postData.author.temperature}℃</p>
           </div>
         </div>
       </div>
