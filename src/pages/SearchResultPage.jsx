@@ -24,7 +24,7 @@ function SearchResultPage() {
           content: "요리사 토끼 인형 키링입니다.",
           keywords: "토끼, 노란색, 인형, 키링, 요리사",
           img: "/images/usagi1.png",
-          similarity_score: 75.0
+          similarity_score: 57.5
         },
         {
           id: "dummy_search_2",
@@ -32,7 +32,7 @@ function SearchResultPage() {
           content: "어린시절 토끼 인형입니다.",
           keywords: "토끼, 노란색, 인형, 키링, 아기",
           img: "/images/usagi2.png",
-          similarity_score: 75.0
+          similarity_score: 60.0
         },
         {
           id: "dummy_search_3",
