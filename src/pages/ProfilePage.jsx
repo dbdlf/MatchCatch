@@ -57,17 +57,14 @@ function ProfilePage() {
       localStorage.setItem('mockItems', JSON.stringify(mockItems));
     }
 
-    // 현재 보고 있는 프로필의 주인공 ID 설정
     const profileOwnerId = isOwnProfile ? "차차" : receivedUserId;
 
-    // 진행 중인 활동 필터링 (글쓴이 일치 여부 확인)
     const ongoing = mockItems.filter(item => 
       item.author?.id === profileOwnerId && 
       (item.status === 'REGISTERED' || item.status === 'MATCHING') && 
       (item.mode === 'found' || String(item.id).startsWith('dummy_'))
     );
     
-    // 완료된 활동 필터링
     const completed = mockItems.filter(item => 
       item.author?.id === profileOwnerId &&
       item.status === 'DELIVERED'
@@ -75,19 +72,20 @@ function ProfilePage() {
 
     setUserData({
       id: profileOwnerId,
-      // 💡 핵심 수정 1: User1234일 때만 36.5도, 나머지는 기존 온도 유지
       temperature: profileOwnerId === 'User1234' ? 36.5 : 46.5,
       ongoingActivities: ongoing.map(item => ({
         id: item.id,
         title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
         img: item.imageUrl
       })),
-      completedActivities: completed.map(item => ({
+      // 💡 핵심 1: User1234일 경우 완료 내역 데이터를 강제로 비움 ([])
+      completedActivities: profileOwnerId === 'User1234' ? [] : completed.map(item => ({
         id: item.id,
         title: item.id === "dummy_2" ? "흰색 텀블러" : item.id === "dummy_3" ? "갤럭시 버즈 프로" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
         img: item.imageUrl
       })),
-      reviews: [
+      // 💡 핵심 2: User1234일 경우 리뷰 데이터를 강제로 비움 ([])
+      reviews: profileOwnerId === 'User1234' ? [] : [
         { id: 1, type: "POSITIVE", content: "정말 친절하시고 시간 약속도 잘 지키셨어요!" },
         { id: 2, type: "POSITIVE", content: "덕분에 소중한 물건을 찾았습니다. 감사합니다." }
       ]
@@ -115,7 +113,6 @@ function ProfilePage() {
 
   return (
     <Layout>
-      {/* 상단 헤더 영역 */}
       <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100 bg-white">
         {!isOwnProfile ? (
           <button onClick={() => navigate(-1)} className="p-1">
@@ -143,7 +140,6 @@ function ProfilePage() {
         )}
       </div>
 
-      {/* 프로필 정보 영역 */}
       <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between bg-white">
         <div className="flex items-center space-x-4">
           <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
@@ -169,7 +165,6 @@ function ProfilePage() {
         </div>
       </div>
 
-      {/* 활동 및 후기 내역 영역 */}
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 pb-24 bg-white">
         
         {/* 1. 활동 내역 (진행 중) */}
@@ -194,34 +189,30 @@ function ProfilePage() {
         )}
 
         {/* 2. 활동 내역 (완료) */}
-        {/* 💡 핵심 수정 2: User1234가 아닐 때만 렌더링되게 안전장치 추가 */}
-        {userData.id !== 'User1234' && (
-          <section className="space-y-4">
-            <h3 className="font-bold text-lg">활동내역 (완료)</h3>
-            {userData.completedActivities.length > 0 ? (
-              userData.completedActivities.map(item => (
-                <div 
-                  key={item.id} 
-                  onClick={() => handleActivityClick(item.id)}
-                  className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
-                >
-                  <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
-                  <span className="text-sm font-bold text-gray-800">{item.title}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-xs text-gray-400 py-2">완료된 내역이 없습니다.</p>
-            )}
-          </section>
-        )}
+        <section className="space-y-4">
+          <h3 className="font-bold text-lg">활동내역 (완료)</h3>
+          {userData.completedActivities.length > 0 ? (
+            userData.completedActivities.map(item => (
+              <div 
+                key={item.id} 
+                onClick={() => handleActivityClick(item.id)}
+                className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
+              >
+                <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
+                <span className="text-sm font-bold text-gray-800">{item.title}</span>
+              </div>
+            ))
+          ) : (
+            <p className="text-xs text-gray-400 py-2">완료된 내역이 없습니다.</p>
+          )}
+        </section>
 
         {/* 3. 받은 후기 */}
-        {/* 💡 핵심 수정 3: User1234가 아닐 때만 렌더링되게 안전장치 추가 */}
-        {userData.id !== 'User1234' && (
-          <section className="space-y-4">
-            <h3 className="font-bold text-lg">받은 후기</h3>
-            <div className="space-y-3">
-              {userData.reviews.map(review => (
+        <section className="space-y-4">
+          <h3 className="font-bold text-lg">받은 후기</h3>
+          <div className="space-y-3">
+            {userData.reviews.length > 0 ? (
+              userData.reviews.map(review => (
                 <div key={review.id} className="p-4 border border-gray-100 rounded-2xl bg-white shadow-sm">
                   <div className="flex items-center mb-2">
                     <span className="text-sm mr-2">{review.type === 'POSITIVE' ? '😊' : '🙁'}</span>
@@ -231,10 +222,13 @@ function ProfilePage() {
                   </div>
                   <p className="text-xs text-gray-600 leading-relaxed font-medium">{review.content}</p>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+              ))
+            ) : (
+              // 💡 핵심 3: 데이터가 비어있을 때 빈 화면 대신 보여줄 텍스트 추가
+              <p className="text-xs text-gray-400 py-2">받은 후기가 없습니다.</p>
+            )}
+          </div>
+        </section>
 
       </div>
     </Layout>
