@@ -29,7 +29,25 @@ export const chatApi = {
         { 
           message_id: 2, 
           sender_id: 1, // 내 ID
-          message: "네 맞습니다! 정문 앞 커피숍인데 언제쯤 오시나요?", 
+          message: "네 맞습니다! 정문 앞에서 만나는 거 어떠세요?", 
+          created_at: "2026-05-19T10:02:00Z" 
+        },
+        { 
+          message_id: 3, 
+          sender_id: 2, 
+          message: "좋습니다! 지금 바로 갈게요", 
+          created_at: "2026-05-19T10:02:00Z" 
+        },
+        { 
+          message_id: 4, 
+          sender_id: 1, // 내 ID
+          message: "넵 알겠습니다", 
+          created_at: "2026-05-19T10:02:00Z" 
+        },
+        { 
+          message_id: 5, 
+          sender_id: 2, 
+          message: "덕분에 잃어버린 물건을 무사히 찾았습니다 정말 감사드려요!", 
           created_at: "2026-05-19T10:02:00Z" 
         }
       ],
