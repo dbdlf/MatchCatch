@@ -47,7 +47,7 @@ export const chatApi = {
         { 
           message_id: 5, 
           sender_id: 2, 
-          message: "덕분에 잃어버린 물건을 무사히 찾았습니다 정말 감사드려요!", 
+          message: "덕분에 잃어버린 물건을 무사히 찾았습니다    정말 감사드려요!", 
           created_at: "2026-05-19T10:02:00Z" 
         }
       ],
