@@ -28,7 +28,7 @@ function ProfilePage() {
           location: "충남대학교 정문 근처",
           time: "2026-05-19 14:00",
           imageUrl: "/images/black_wallet.png",
-          author: { id: "차차", temperature: 36.5 }
+          author: { id: "차차", temperature: 46.5 }
         },
         {
           id: "dummy_2",
@@ -39,7 +39,7 @@ function ProfilePage() {
           location: "인문대학 1층 로비",
           time: "2026-05-18 11:30",
           imageUrl: "/images/white_tumbler.png",
-          author: { id: "차차", temperature: 36.5 }
+          author: { id: "차차", temperature: 46.5 }
         },
         {
           id: "dummy_3",
@@ -50,7 +50,7 @@ function ProfilePage() {
           location: "공과대학 5호관 2층",
           time: "2026-05-17 16:45",
           imageUrl: "/images/buds_pro.png",
-          author: { id: "차차", temperature: 36.5 }
+          author: { id: "차차", temperature: 46.5 }
         }
       ];
       mockItems = [...initialDummies, ...mockItems];
@@ -75,7 +75,7 @@ function ProfilePage() {
 
     setUserData({
       id: profileOwnerId,
-      temperature: 36.5,
+      temperature: 46.5,
       ongoingActivities: ongoing.map(item => ({
         id: item.id,
         title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
