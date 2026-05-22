@@ -65,7 +65,7 @@ function ReviewPage() {
             </div>
             <div className="flex-1">
               <h4 className="font-bold text-sm text-gray-800">{postTitle}</h4>
-              <p className="text-[10px] text-gray-400 mt-0.5">매칭 완료된 분실물</p>
+              <p className="text-[10px] text-gray-400 mt-0.5"></p>
             </div>
         </div>
 
