@@ -8,7 +8,7 @@ function ChatListPage() {
 
   // 더미 데이터: 활성화된 채팅방 목록
   const chatRooms = [
-    { id: 1, userId: "user1234", lastMsg: "내일 정문 앞에서 뵐까요?", time: "오후 2:30", img: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" },
+    { id: 1, userId: "user1234", lastMsg: "인도가 완료되었어요. 후기를 작성해 주세요", time: "오후 2:30", img: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" },
     { id: 2, userId: "cnuchacha", lastMsg: "물건 확인했습니다! 감사합니다.", time: "어제", img: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" },
   ];
 
