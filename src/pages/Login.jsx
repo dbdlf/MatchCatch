@@ -35,9 +35,11 @@ const LoginPage = () => {
     <Layout hideNav>
       <div className="flex-1 flex flex-col justify-between px-6 py-10 bg-white h-full overflow-y-auto">
         <div className="space-y-10 mt-4">
-          <h1 className="text-4xl font-extrabold text-center tracking-tight">
-            <span className="text-[#FF8C69]">Match</span> <span className="text-[#FFC107]">Catch!!</span>
-          </h1>
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-2 border-b-2 border-black pb-1 inline-block">
+              <span className="text-[#FFC107]">M</span>atch <span className="text-[#FFC107]">C</span>atch!!
+            </h1>
+          </div>
 
           <div className="w-full space-y-5">
             <div className="space-y-1.5">
