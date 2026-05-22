@@ -67,7 +67,6 @@ function PostDetailPage() {
         await matchApi.createMatch(myLostItemId, receivedPostId);
         
         alert("매칭 요청이 성공적으로 전송되었습니다!");
-        navigate('/matchmanagement'); 
       } catch (error) {
         alert("매칭 요청 중 오류가 발생했습니다.");
       }
