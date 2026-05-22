@@ -35,8 +35,8 @@ function ChatListPage() {
         state: {
           chatId: room.id,
           opponentName: room.userId,
-          postTitle: room.postTitle || "삼색 고양이 인형", // 상세방 상단에 보여줄 게시글 제목 (데이터에 없으면 기본값)
-          postImg: room.img // 상세방 상단에 보여줄 게시글 이미지
+          postTitle: room.postTitle || "토끼 인형 키링", // 상세방 상단에 보여줄 게시글 제목 (데이터에 없으면 기본값)
+          postImg: "/images/chatmain.jpeg" // 상세방 상단에 보여줄 게시글 이미지
         }
       })}
       className="flex items-center px-6 py-4 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors"
