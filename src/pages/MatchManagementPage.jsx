@@ -1,58 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { matchApi } from '../api';
 
 function MatchManagementPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('sent'); // 편의상 보낸 요청 탭을 기본으로 설정
+  // 💡 탭의 기본값을 필요에 따라 'received'나 'sent'로 변경해서 테스트하세요.
+  const [activeTab, setActiveTab] = useState('sent'); 
   
   const [isWalletDetailOpen, setIsWalletDetailOpen] = useState(false);
-  const [dynamicSentMatches, setDynamicSentMatches] = useState([]);
-
-  // 실시간 매칭 요청 데이터를 가져오는 로직
-  useEffect(() => {
-    const fetchMatches = async () => {
-      try {
-        const allMatches = await matchApi.getMatches();
-        const mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
-
-        const realMatches = allMatches.filter(m => m.match_id > 100);
-
-        const enrichedMatches = realMatches.map(match => {
-          const lostItem = mockItems.find(item => item.id === match.lost_item_id) || {};
-          const foundItem = mockItems.find(item => item.id === match.found_item_id) || {};
-
-          const foundTitle = foundItem.title && foundItem.title !== "습득물 (제목 없음)" 
-            ? foundItem.title 
-            : foundItem.content?.substring(0, 12) + "...";
-
-          return {
-            ...match,
-            foundItemTitle: foundTitle || "습득물 정보 없음",
-            img: foundItem.imageUrl || lostItem.imageUrl || "/images/default.png",
-            opponentName: foundItem.author?.id || "익명"
-          };
-        });
-
-        setDynamicSentMatches(enrichedMatches);
-      } catch (error) {
-        console.error("매칭 내역을 불러오는데 실패했습니다.", error);
-      }
-    };
-
-    fetchMatches();
-  }, []);
-
-  const getStatusBadge = (status) => {
-    switch(status) {
-      case 'PENDING': return <span className="text-[11px] px-3 py-1.5 bg-amber-50 text-amber-600 font-bold rounded-full border border-amber-100">수락 대기 중</span>;
-      case 'ACCEPTED': return <span className="text-[11px] px-3 py-1.5 bg-green-50 text-green-600 font-bold rounded-full border border-green-100">매칭 수락됨</span>;
-      case 'REJECTED': return <span className="text-[11px] px-3 py-1.5 bg-red-50 text-red-500 font-bold rounded-full border border-red-100">거절됨</span>;
-      case 'DELIVERED': return <span className="text-[11px] px-3 py-1.5 bg-gray-100 text-gray-500 font-bold rounded-full border border-gray-200">인도 완료</span>;
-      default: return null;
-    }
-  };
 
   return (
     <Layout hideNav>
@@ -83,7 +38,7 @@ function MatchManagementPage() {
         {/* 요청 리스트 영역 */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-white pb-24">
           {activeTab === 'received' ? (
-            /* 탭 A: 받은 요청 */
+            /* 탭 A: 받은 요청 (하드코딩 고정) */
             <div className="space-y-4">
               <div 
                 className="p-4 border border-gray-200 rounded-2xl space-y-4 shadow-sm bg-white cursor-pointer hover:bg-gray-50 transition-colors"
@@ -95,11 +50,10 @@ function MatchManagementPage() {
                     <div>
                       <h4 className="font-bold text-sm text-gray-900">검정색 지갑을 찾습니다</h4>
                       
-                      {/* 💡 수정 1: 분실자 텍스트 클릭 시 User1234 프로필로 이동 (isOwnProfile: false 설정) */}
                       <p 
                         className="text-[10px] text-gray-400 mt-0.5 inline-block hover:text-gray-700 hover:underline cursor-pointer"
                         onClick={(e) => {
-                          e.stopPropagation(); // 아코디언 방지
+                          e.stopPropagation(); 
                           navigate('/profile', { state: { userId: 'User1234', isOwnProfile: false } });
                         }}
                       >
@@ -146,7 +100,7 @@ function MatchManagementPage() {
               </div>
             </div>
           ) : (
-            /* 탭 B: 보낸 요청 */
+            /* 탭 B: 보낸 요청 (하드코딩 고정) */
             <div className="space-y-4">
               {/* 고정 예시: 에어팟 프로 */}
               <div className="p-4 border border-gray-200 rounded-2xl flex items-center justify-between shadow-sm bg-white">
@@ -155,7 +109,6 @@ function MatchManagementPage() {
                   <div>
                     <h4 className="font-bold text-sm text-gray-900">에어팟 프로 습득물</h4>
                     
-                    {/* 💡 수정 2: 고정 에어팟 예시의 습득자 프로필 연동 */}
                     <p 
                       className="text-[10px] text-gray-400 mt-0.5 inline-block hover:text-gray-700 hover:underline cursor-pointer"
                       onClick={() => navigate('/profile', { state: { userId: 'Finder01', isOwnProfile: false } })}
@@ -166,34 +119,6 @@ function MatchManagementPage() {
                 </div>
                 <span className="text-xs px-3 py-1 bg-amber-50 text-amber-600 font-bold rounded-full">수락 대기 중</span>
               </div>
-
-              {/* 실시간 추가 데이터 목록 */}
-              {dynamicSentMatches.map(match => (
-                <div key={match.match_id} className="p-4 border border-gray-200 rounded-2xl flex items-center justify-between shadow-sm bg-white mt-4 cursor-pointer active:scale-[0.98] transition-transform">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gray-200 rounded-lg mr-3 overflow-hidden flex-shrink-0">
-                      <img src={match.img} alt="물품" className="w-full h-full object-cover" />
-                    </div>
-                    <div className="mr-3">
-                      <h4 className="font-bold text-sm text-gray-900 line-clamp-1 break-all">{match.foundItemTitle}</h4>
-                      
-                      {/* 💡 수정 3: 실시간으로 추가되는 상대방(익명 등)의 프로필 연동 */}
-                      <p 
-                        className="text-[11px] text-gray-500 mt-0.5 font-medium inline-block hover:text-gray-800 hover:underline cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation(); // 카드 자체 클릭 이벤트 차단
-                          navigate('/profile', { state: { userId: match.opponentName, isOwnProfile: false } });
-                        }}
-                      >
-                        습득자: {match.opponentName}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex-shrink-0">
-                    {getStatusBadge(match.status)}
-                  </div>
-                </div>
-              ))}
             </div>
           )}
         </div>
