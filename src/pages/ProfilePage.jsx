@@ -75,7 +75,8 @@ function ProfilePage() {
 
     setUserData({
       id: profileOwnerId,
-      temperature: 46.5,
+      // 💡 핵심 수정 1: User1234일 때만 36.5도, 나머지는 기존 온도 유지
+      temperature: profileOwnerId === 'User1234' ? 36.5 : 46.5,
       ongoingActivities: ongoing.map(item => ({
         id: item.id,
         title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
@@ -172,7 +173,6 @@ function ProfilePage() {
       <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 pb-24 bg-white">
         
         {/* 1. 활동 내역 (진행 중) */}
-        {/* 💡 핵심 수정: 다시 {isOwnProfile && (...)} 안전장치를 씌워서 내 프로필일 때만 렌더링되게 만들었습니다! */}
         {isOwnProfile && (
           <section className="space-y-4">
             <h3 className="font-bold text-lg">활동내역 (진행중)</h3>
@@ -194,41 +194,47 @@ function ProfilePage() {
         )}
 
         {/* 2. 활동 내역 (완료) */}
-        <section className="space-y-4">
-          <h3 className="font-bold text-lg">활동내역 (완료)</h3>
-          {userData.completedActivities.length > 0 ? (
-            userData.completedActivities.map(item => (
-              <div 
-                key={item.id} 
-                onClick={() => handleActivityClick(item.id)}
-                className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
-              >
-                <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
-                <span className="text-sm font-bold text-gray-800">{item.title}</span>
-              </div>
-            ))
-          ) : (
-            <p className="text-xs text-gray-400 py-2">완료된 내역이 없습니다.</p>
-          )}
-        </section>
+        {/* 💡 핵심 수정 2: User1234가 아닐 때만 렌더링되게 안전장치 추가 */}
+        {userData.id !== 'User1234' && (
+          <section className="space-y-4">
+            <h3 className="font-bold text-lg">활동내역 (완료)</h3>
+            {userData.completedActivities.length > 0 ? (
+              userData.completedActivities.map(item => (
+                <div 
+                  key={item.id} 
+                  onClick={() => handleActivityClick(item.id)}
+                  className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
+                >
+                  <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
+                  <span className="text-sm font-bold text-gray-800">{item.title}</span>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs text-gray-400 py-2">완료된 내역이 없습니다.</p>
+            )}
+          </section>
+        )}
 
         {/* 3. 받은 후기 */}
-        <section className="space-y-4">
-          <h3 className="font-bold text-lg">받은 후기</h3>
-          <div className="space-y-3">
-            {userData.reviews.map(review => (
-              <div key={review.id} className="p-4 border border-gray-100 rounded-2xl bg-white shadow-sm">
-                <div className="flex items-center mb-2">
-                  <span className="text-sm mr-2">{review.type === 'POSITIVE' ? '😊' : '🙁'}</span>
-                  <span className={`text-[11px] font-bold ${review.type === 'POSITIVE' ? 'text-[#FFD18F]' : 'text-red-400'}`}>
-                    {review.type === 'POSITIVE' ? '만족' : '불만족'}
-                  </span>
+        {/* 💡 핵심 수정 3: User1234가 아닐 때만 렌더링되게 안전장치 추가 */}
+        {userData.id !== 'User1234' && (
+          <section className="space-y-4">
+            <h3 className="font-bold text-lg">받은 후기</h3>
+            <div className="space-y-3">
+              {userData.reviews.map(review => (
+                <div key={review.id} className="p-4 border border-gray-100 rounded-2xl bg-white shadow-sm">
+                  <div className="flex items-center mb-2">
+                    <span className="text-sm mr-2">{review.type === 'POSITIVE' ? '😊' : '🙁'}</span>
+                    <span className={`text-[11px] font-bold ${review.type === 'POSITIVE' ? 'text-[#FFD18F]' : 'text-red-400'}`}>
+                      {review.type === 'POSITIVE' ? '만족' : '불만족'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 leading-relaxed font-medium">{review.content}</p>
                 </div>
-                <p className="text-xs text-gray-600 leading-relaxed font-medium">{review.content}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+              ))}
+            </div>
+          </section>
+        )}
 
       </div>
     </Layout>
