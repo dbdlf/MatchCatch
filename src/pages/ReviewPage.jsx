@@ -60,14 +60,14 @@ function ReviewPage() {
         <div className="px-6 py-8 space-y-10 flex-1">
           {/* 매칭된 게시물 정보 카드 */}
           <div className="p-4 border border-gray-200 rounded-xl flex items-center shadow-sm bg-white">
-            <div className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden mr-4 flex-shrink-0 flex items-center justify-center text-xs text-gray-400 font-bold">
-              사진
+            <div className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden mr-4 flex-shrink-0">
+              <img src="/images/chatmain.jpeg" alt="물품 사진" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1">
               <h4 className="font-bold text-sm text-gray-800">{postTitle}</h4>
               <p className="text-[10px] text-gray-400 mt-0.5">매칭 완료된 분실물</p>
             </div>
-          </div>
+        </div>
 
           {/* 만족도 선택 섹션 */}
           <div className="text-center space-y-6">
