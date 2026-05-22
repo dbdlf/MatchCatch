@@ -172,9 +172,9 @@ function UploadPage() {
               <label className="text-xs font-bold text-gray-400 pl-1">특징 키워드 (쉼표 구분, 필수)</label>
               <input 
                 type="text" 
-                placeholder="종류, 색깔, 모양 등" 
+                placeholder="종류, 색상, 모양 등" 
                 disabled={isSubmitting}
-                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all font-semibold text-gray-800"
+                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
                 value={formData.keywords} 
                 onChange={e => setFormData({...formData, keywords: e.target.value})}
               />
