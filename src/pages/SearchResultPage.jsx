@@ -62,7 +62,7 @@ function SearchResultPage() {
         }
       ];
 
-      // 상세페이지 에러 방지를 위해 가상 DB(localStorage)에 더미 데이터 강제 주입
+      // 상세페이지 에러 방지 더미 데이터
       let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
       const hasSearchDummy = mockItems.some(item => item.id === 'dummy_search_1');
       if (!hasSearchDummy) {
@@ -70,7 +70,7 @@ function SearchResultPage() {
         localStorage.setItem('mockItems', JSON.stringify(mockItems));
       }
 
-      // 나중에 백엔드와 연결할 때, initialResults에 결과가 없으면 이 더미를 띄우도록 되어있습니다.
+      // initialResults에 결과가 없으면 이 더미를 띄움. 추후 수정
       const baseResults = initialResults.length > 0 ? initialResults : dummyData;
       
       const sortedResults = [...baseResults].sort((a, b) => {

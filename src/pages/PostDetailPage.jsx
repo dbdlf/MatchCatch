@@ -136,7 +136,6 @@ function PostDetailPage() {
         </div>
 
         <div onClick={handleGoProfile} className="flex items-center p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100">
-          {/* 하드코딩된 이미지를 지우고, 데이터가 있을 때만 띄우거나 기본 회색 배경을 씁니다 */}
           <div className="w-16 h-16 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden mr-4 flex items-center justify-center">
             {postData.author.profileImg && (
               <img src={postData.author.profileImg} alt="프로필" className="w-full h-full object-cover" />

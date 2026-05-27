@@ -4,7 +4,7 @@ import Layout from '../components/Layout';
 
 function MatchManagementPage() {
   const navigate = useNavigate();
-  // 💡 탭의 기본값을 필요에 따라 'received'나 'sent'로 변경해서 테스트하세요.
+  // 탭의 기본값 : 필요에 따라 'received'나 'sent'로 변경해서 테스트
   const [activeTab, setActiveTab] = useState('sent'); 
   
   const [isWalletDetailOpen, setIsWalletDetailOpen] = useState(false);

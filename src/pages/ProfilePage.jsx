@@ -15,7 +15,7 @@ function ProfilePage() {
   useEffect(() => {
     let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
     
-    // 고정 더미 데이터 주입
+    // 고정 더미 데이터
     const hasDummy = mockItems.some(item => String(item.id).startsWith('dummy_1'));
     if (!hasDummy) {
       const initialDummies = [
@@ -78,13 +78,11 @@ function ProfilePage() {
         title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
         img: item.imageUrl
       })),
-      // 💡 핵심 1: User1234일 경우 완료 내역 데이터를 강제로 비움 ([])
       completedActivities: profileOwnerId === 'User1234' ? [] : completed.map(item => ({
         id: item.id,
         title: item.id === "dummy_2" ? "흰색 텀블러" : item.id === "dummy_3" ? "갤럭시 버즈 프로" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
         img: item.imageUrl
       })),
-      // 💡 핵심 2: User1234일 경우 리뷰 데이터를 강제로 비움 ([])
       reviews: profileOwnerId === 'User1234' ? [] : [
         { id: 1, type: "POSITIVE", content: "정말 친절하시고 시간 약속도 잘 지키셨어요!" },
         { id: 2, type: "POSITIVE", content: "덕분에 소중한 물건을 찾았습니다. 감사합니다." }
@@ -224,7 +222,6 @@ function ProfilePage() {
                 </div>
               ))
             ) : (
-              // 💡 핵심 3: 데이터가 비어있을 때 빈 화면 대신 보여줄 텍스트 추가
               <p className="text-xs text-gray-400 py-2">받은 후기가 없습니다.</p>
             )}
           </div>

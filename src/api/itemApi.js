@@ -1,11 +1,9 @@
 import { delay } from './index';
 
-// 브라우저 저장소를 가상 DB로 사용하기 위한 헬퍼 함수
 const getMockItems = () => JSON.parse(localStorage.getItem('mockItems')) || [];
 const saveMockItems = (items) => localStorage.setItem('mockItems', JSON.stringify(items));
 
 export const itemApi = {
-  // 습득물 등록 (가상 DB에 저장)
   registerFoundItem: async (formData) => {
     await delay(800); 
     const items = getMockItems();
@@ -58,7 +56,7 @@ export const itemApi = {
     return foundItem;
   },
 
-  // 유사 습득물 조회 (가상 DB에서 습득물만 필터링)
+  // 유사 습득물 조회
   getSimilarFoundItems: async (lostItemId) => {
     await delay(1200); 
     const items = getMockItems();
@@ -70,13 +68,12 @@ export const itemApi = {
       content: item.content, 
       keywords: item.keywords,
       img: item.imageUrl,
-      // 💡 핵심 해결 포인트: 원래 아이템에 점수가 있으면 그걸 유지하고, 새로 등록된 애들만 임의로 점수 부여!
       similarity_score: item.similarity_score || Math.max(95 - (index * 5), 10),
       location: item.location
     }));
   },
 
-  // 습득물 수정 (가상 DB 업데이트)
+  // 습득물 수정
   editFoundItem: async (itemId, formData) => {
     await delay(800);
     const items = getMockItems();
@@ -88,7 +85,7 @@ export const itemApi = {
     return { success: true, item_id: itemId };
   },
 
-  // 분실물 수정 (가상 DB 업데이트)
+  // 분실물 수정
   editLostItem: async (itemId, formData) => {
     await delay(800);
     const items = getMockItems();

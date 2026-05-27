@@ -13,11 +13,10 @@ export const chatApi = {
     };
   },
 
-  // 메시지 목록 조회 (페이지네이션 포함)
+  // 메시지 목록 조회
   getMessages: async (chatRoomId, cursor = null, size = 20) => {
     await delay(500);
     
-    // 명세서 규격에 맞춘 응답 포맷
     return {
       messages: [
         { 

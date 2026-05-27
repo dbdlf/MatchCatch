@@ -1,6 +1,5 @@
 import { delay } from './index';
 
-// 💡 매칭 내역을 위한 가상 DB 헬퍼 함수 추가
 const getMockMatches = () => {
   const stored = JSON.parse(localStorage.getItem('mockMatches'));
   if (stored) return stored;
@@ -29,11 +28,8 @@ export const matchApi = {
       status: "PENDING" // 매칭 대기
     };
     
-    // 💡 방금 보낸 매칭 요청을 가상 DB에 저장!
     matches.push(newMatch);
     saveMockMatches(matches);
-    
-    console.log(`매칭 요청 저장 완료: 분실물(${lostItemId}) -> 습득물(${foundItemId})`);
     return newMatch;
   },
 
@@ -64,7 +60,6 @@ export const matchApi = {
   // 매칭 목록 조회
   getMatches: async () => {
     await delay(600);
-    // 💡 하드코딩된 배열 대신 가상 DB에서 내역을 꺼내옴!
     return getMockMatches();
   },
 
@@ -95,7 +90,6 @@ export const matchApi = {
   // 후기 작성
   writeReview: async (reviewData) => {
     await delay(800);
-    console.log("서버로 전송된 후기 데이터:", reviewData);
     const isPositive = reviewData.review_type === 'POSITIVE';
     return {
       review_id: Date.now(),
