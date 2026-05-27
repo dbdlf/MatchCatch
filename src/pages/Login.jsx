@@ -37,7 +37,7 @@ const LoginPage = () => {
         <div className="space-y-10 mt-4">
           <div className="text-center">
             <h1 className="text-4xl font-bold inline-block">
-              <span className="bg-gradient-to-r from-[#464BAA] to-[#7B8FE0] text-transparent bg-clip-text">
+              <span className="bg-gradient-to-r from-primary to-primary-light text-transparent bg-clip-text">
                 Match Catch!!
               </span>
             </h1>
@@ -47,7 +47,7 @@ const LoginPage = () => {
             <div className="space-y-1.5">
               <label className="block text-gray-700 font-bold text-sm pl-1">아이디</label>
               <input 
-                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#464BAA] outline-none text-sm transition-all" 
+                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none text-sm transition-all" 
                 type="text" 
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
@@ -59,7 +59,7 @@ const LoginPage = () => {
             <div className="space-y-1.5">
               <label className="block text-gray-700 font-bold text-sm pl-1">비밀번호</label>
               <input 
-                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#464BAA] outline-none text-sm transition-all" 
+                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary outline-none text-sm transition-all" 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -77,7 +77,7 @@ const LoginPage = () => {
             className={`w-full py-4 rounded-[28px] text-base font-bold transition-all shadow-sm ${
               isLoading 
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                : 'bg-gradient-to-r from-[#464BAA] to-[#7B8FE0] text-white active:scale-[0.98] hover:brightness-95'
+                : 'bg-gradient-to-r from-primary to-primary-light text-white active:scale-[0.98] hover:brightness-95'
             }`}
           >
             {isLoading ? '로그인 중...' : '로그인'}

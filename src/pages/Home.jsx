@@ -16,7 +16,7 @@ const HomePage = () => {
         {/* 상단 로고 영역 */}
         <div className="flex-1 flex flex-col items-center justify-start pt-32">
           <h1 className="text-4xl font-bold inline-block">
-            <span className="bg-gradient-to-r from-[#464BAA] to-[#7B8FE0] text-transparent bg-clip-text">
+            <span className="bg-gradient-to-r from-primary to-primary-light text-transparent bg-clip-text">
               Match Catch!!
             </span>
           </h1>
@@ -27,14 +27,14 @@ const HomePage = () => {
           {/* 습득물 등록: 'found' 모드로 이동 */}
           <button 
             onClick={() => handleUpload('found')}
-            className="w-full bg-[#FFDCA8] border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-[#FFC67A] transition-colors shadow-sm">
+            className="w-full bg-primary border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-primary-dark transition-colors shadow-sm">
             습득물 등록
           </button>
           
           {/* 분실물 검색: 'lost' 모드로 이동 */}
           <button 
             onClick={() => handleUpload('lost')}
-            className="w-full bg-[#FFDCA8] border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-[#FFC67A] transition-colors shadow-sm">
+            className="w-full bg-primary border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-primary-dark transition-colors shadow-sm">
             분실물 검색
           </button>
         </div>
