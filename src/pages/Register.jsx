@@ -98,7 +98,7 @@ const RegisterPage = () => {
               <input 
                 name="studentId"
                 inputMode="numeric"
-                className="flex-1 p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
+                className="flex-1 p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#464BAA] transition-all" 
                 type="text" 
                 placeholder="학번"
                 value={formData.studentId}
@@ -121,7 +121,7 @@ const RegisterPage = () => {
             <div className="flex space-x-2">
               <input 
                 name="userId"
-                className="flex-1 p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
+                className="flex-1 p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#464BAA] transition-all" 
                 type="text" 
                 placeholder="사용할 아이디 입력"
                 value={formData.userId}
@@ -143,7 +143,7 @@ const RegisterPage = () => {
             <label className="block text-gray-800 font-bold text-sm pl-1">비밀번호</label>
             <input 
               name="password"
-              className="w-full p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
+              className="w-full p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#464BAA] transition-all" 
               type="password" 
               placeholder="비밀번호 입력"
               value={formData.password}
@@ -156,7 +156,7 @@ const RegisterPage = () => {
             <label className="block text-gray-800 font-bold text-sm pl-1">비밀번호 확인</label>
             <input 
               name="confirmPassword"
-              className="w-full p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#FFC107] transition-all" 
+              className="w-full p-4 border border-gray-200 rounded-xl outline-none text-sm focus:ring-2 focus:ring-[#464BAA] transition-all" 
               type="password" 
               placeholder="비밀번호 다시 입력"
               value={formData.confirmPassword}
@@ -178,10 +178,10 @@ const RegisterPage = () => {
           <button 
             disabled={!isFormValid || isLoading}
             onClick={handleRegister}
-            className={`w-full py-4 rounded-xl text-base font-bold transition-all shadow-sm ${
+            className={`w-full py-4 rounded-[28px] text-base font-bold transition-all shadow-sm ${
               !isFormValid || isLoading 
                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                : 'bg-[#FFC107] text-gray-900 active:scale-[0.98] hover:brightness-95'
+                : 'bg-gradient-to-r from-[#464BAA] to-[#7B8FE0] text-white active:scale-[0.98] hover:brightness-95'
             }`}
           >
             {isLoading ? '가입 처리 중...' : '가입하기'}
