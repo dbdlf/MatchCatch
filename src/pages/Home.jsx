@@ -15,8 +15,10 @@ const HomePage = () => {
       
         {/* 상단 로고 영역 */}
         <div className="flex-1 flex flex-col items-center justify-start pt-32">
-          <h1 className="text-4xl font-bold mb-2 border-b-2 border-black pb-1 inline-block">
-            <span className="text-[#FFC107]">M</span>atch <span className="text-[#FFC107]">C</span>atch!!
+          <h1 className="text-4xl font-bold inline-block">
+            <span className="bg-gradient-to-r from-[#464BAA] to-[#7B8FE0] text-transparent bg-clip-text">
+              Match Catch!!
+            </span>
           </h1>
         </div>
 
