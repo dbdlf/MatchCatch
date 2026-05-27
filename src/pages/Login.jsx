@@ -36,8 +36,10 @@ const LoginPage = () => {
       <div className="flex-1 flex flex-col justify-between px-6 py-10 bg-white h-full overflow-y-auto">
         <div className="space-y-10 mt-4">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-2 border-b-2 border-black pb-1 inline-block">
-              <span className="text-[#FFC107]">M</span>atch <span className="text-[#FFC107]">C</span>atch!!
+            <h1 className="text-4xl font-bold inline-block">
+              <span className="bg-gradient-to-r from-[#464BAA] to-[#7B8FE0] text-transparent bg-clip-text">
+                Match Catch!!
+              </span>
             </h1>
           </div>
 
@@ -72,8 +74,10 @@ const LoginPage = () => {
           <button 
             onClick={handleLogin} 
             disabled={isLoading}
-            className={`w-full py-4 rounded-xl text-base font-bold transition-all shadow-sm ${
-              isLoading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#FFC107] text-gray-900 active:scale-[0.98] hover:brightness-95'
+            className={`w-full py-4 rounded-[28px] text-base font-bold transition-all shadow-sm ${
+              isLoading 
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                : 'bg-gradient-to-r from-[#464BAA] to-[#7B8FE0] text-white active:scale-[0.98] hover:brightness-95'
             }`}
           >
             {isLoading ? '로그인 중...' : '로그인'}
