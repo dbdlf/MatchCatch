@@ -47,7 +47,7 @@ const LoginPage = () => {
             <div className="space-y-1.5">
               <label className="block text-gray-700 font-bold text-sm pl-1">아이디</label>
               <input 
-                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FFC107] outline-none text-sm transition-all" 
+                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#464BAA] outline-none text-sm transition-all" 
                 type="text" 
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
@@ -59,7 +59,7 @@ const LoginPage = () => {
             <div className="space-y-1.5">
               <label className="block text-gray-700 font-bold text-sm pl-1">비밀번호</label>
               <input 
-                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#FFC107] outline-none text-sm transition-all" 
+                className="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#464BAA] outline-none text-sm transition-all" 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
