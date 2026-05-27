@@ -6,13 +6,16 @@ export default {
   ],
   theme: {
     extend: {
-      "colors": {
-        "white": "#fff",
-        "navajowhite": "#ffd18f", // 👈 ⭐ 앞에 있던 느낌표(!)를 깨끗하게 지웠습니다!
-        "black": "#000"
+      colors: {
+        white: "#fff",
+        black: "#000",
+        primary: {
+          DEFAULT: '#464BAA',
+          light: '#7B8FE0',
+        }
       },
-      "fontFamily": {
-        "inter": "Inter"
+      fontFamily: {
+        inter: "Inter"
       }
     },
   },
