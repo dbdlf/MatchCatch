@@ -104,7 +104,7 @@ function ProfileEditPage() {
         <button 
           disabled={!isFormValid}
           onClick={handleSubmit}
-          className={`text-sm font-bold transition-colors ${isFormValid ? 'text-[#FFD18F] hover:opacity-80' : 'text-gray-300 cursor-not-allowed'}`}
+          className={`text-sm font-bold transition-colors ${isFormValid ? 'text-primary hover:opacity-80' : 'text-gray-300 cursor-not-allowed'}`}
         >
           완료
         </button>

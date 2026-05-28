@@ -81,7 +81,7 @@ function ReviewPage() {
                 disabled={isLoading}
                 className={`flex-1 py-4 rounded-xl font-bold text-sm transition-all shadow-sm ${
                   satisfaction === 'POSITIVE' 
-                  ? 'bg-[#FFD18F] text-black ring-2 ring-[#FFD18F] ring-offset-2' 
+                  ? 'bg-primary text-black ring-2 ring-primary ring-offset-2' 
                   : 'bg-gray-50 text-gray-400 border border-gray-200 hover:bg-gray-100'
                 } disabled:opacity-50`}
               >
@@ -108,7 +108,7 @@ function ReviewPage() {
               disabled={isLoading}
               onChange={(e) => setComment(e.target.value)}
               placeholder="따뜻한 후기를 남겨주시면 상대방의 매너 온도가 올라갑니다 (선택사항)"
-              className="w-full h-36 p-4 bg-gray-50 border border-gray-100 rounded-xl text-sm outline-none resize-none focus:ring-2 focus:ring-[#FFD18F] focus:bg-white transition-all disabled:opacity-50"
+              className="w-full h-36 p-4 bg-gray-50 border border-gray-100 rounded-xl text-sm outline-none resize-none focus:ring-2 focus:ring-primary focus:bg-white transition-all disabled:opacity-50"
             />
           </div>
 
@@ -119,7 +119,7 @@ function ReviewPage() {
               disabled={!satisfaction || isLoading}
               className={`w-full py-4 rounded-xl font-bold text-base transition-all shadow-md ${
                 satisfaction && !isLoading
-                ? 'bg-[#FFD18F] text-black active:scale-[0.98] hover:brightness-95' 
+                ? 'bg-primary text-black active:scale-[0.98] hover:brightness-95' 
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
               }`}
             >

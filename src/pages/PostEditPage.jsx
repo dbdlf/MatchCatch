@@ -85,7 +85,7 @@ function PostEditPage() {
       <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100 bg-white">
         <button onClick={() => navigate(-1)} disabled={isLoading} className="text-gray-400 text-sm font-medium hover:text-black disabled:opacity-50">취소</button>
         <h1 className="text-base font-bold text-gray-900">게시글 수정</h1>
-        <button disabled={!isFormValid} onClick={handleSubmit} className={`text-sm font-bold ${isFormValid ? 'text-[#FFD18F]' : 'text-gray-300 cursor-not-allowed'}`}>
+        <button disabled={!isFormValid} onClick={handleSubmit} className={`text-sm font-bold ${isFormValid ? 'text-primary' : 'text-gray-300 cursor-not-allowed'}`}>
           {isLoading ? '저장 중...' : '완료'}
         </button>
       </div>
@@ -101,19 +101,19 @@ function PostEditPage() {
         {originalPost.mode === 'lost' && (
           <div className="space-y-2">
             <label className="text-xs text-gray-400 font-bold block">제목 (필수)</label>
-            <input type="text" disabled={isLoading} value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium border-l-4 border-[#FFD18F] disabled:opacity-50" />
+            <input type="text" disabled={isLoading} value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium border-l-4 border-primary disabled:opacity-50" />
           </div>
         )}
 
         <div className="space-y-2">
           <label className="text-xs text-gray-400 font-bold block">상세 내용 (필수)</label>
-          <textarea disabled={isLoading} value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="w-full h-28 p-3 bg-gray-100 rounded-lg outline-none resize-none text-sm font-medium border-l-4 border-[#FFD18F] disabled:opacity-50" />
+          <textarea disabled={isLoading} value={formData.content} onChange={e => setFormData({ ...formData, content: e.target.value })} className="w-full h-28 p-3 bg-gray-100 rounded-lg outline-none resize-none text-sm font-medium border-l-4 border-primary disabled:opacity-50" />
         </div>
 
         {originalPost.mode === 'lost' && (
           <div className="space-y-2">
             <label className="text-xs text-gray-400 font-bold block">특징 키워드 (쉼표 구분, 필수)</label>
-            <input type="text" disabled={isLoading} value={formData.keywords} onChange={e => setFormData({ ...formData, keywords: e.target.value })} placeholder="종류, 색깔, 모양 등" className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium border-l-4 border-[#FFD18F] disabled:opacity-50" />
+            <input type="text" disabled={isLoading} value={formData.keywords} onChange={e => setFormData({ ...formData, keywords: e.target.value })} placeholder="종류, 색깔, 모양 등" className="w-full p-3 bg-gray-100 rounded-lg outline-none text-sm font-medium border-l-4 border-primary disabled:opacity-50" />
           </div>
         )}
 

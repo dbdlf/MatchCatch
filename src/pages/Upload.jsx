@@ -108,7 +108,7 @@ function UploadPage() {
           className={`px-6 py-2 rounded-xl font-bold text-sm transition-all ${
             !isFormValid() || isSubmitting || isImageAnalyzing
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-              : 'bg-[#FFD18F] text-black active:scale-[0.98] shadow-sm hover:brightness-95'
+              : 'bg-primary text-black active:scale-[0.98] shadow-sm hover:brightness-95'
           }`}
         >
           {isSubmitting ? (mode === 'found' ? '등록 중...' : '검색 중...') : (mode === 'found' ? '등록 완료' : '검색하기')}
@@ -147,7 +147,7 @@ function UploadPage() {
                 type="text" 
                 placeholder="물품 제목을 입력하세요" 
                 disabled={isSubmitting}
-                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-primary focus:bg-white transition-all"
                 value={formData.title} 
                 onChange={e => setFormData({...formData, title: e.target.value})}
               />
@@ -160,7 +160,7 @@ function UploadPage() {
             <textarea 
               placeholder="물품에 대한 상세 설명을 입력하세요" 
               disabled={isSubmitting}
-              className="w-full h-32 p-4 bg-gray-50 rounded-xl outline-none resize-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+              className="w-full h-32 p-4 bg-gray-50 rounded-xl outline-none resize-none text-sm border border-gray-100 focus:border-primary focus:bg-white transition-all"
               value={formData.content} 
               onChange={e => setFormData({...formData, content: e.target.value})}
             />
@@ -174,7 +174,7 @@ function UploadPage() {
                 type="text" 
                 placeholder="종류, 색상, 모양 등" 
                 disabled={isSubmitting}
-                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+                className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-primary focus:bg-white transition-all"
                 value={formData.keywords} 
                 onChange={e => setFormData({...formData, keywords: e.target.value})}
               />
@@ -187,7 +187,7 @@ function UploadPage() {
               type="text" 
               placeholder="예: 충남대 정문 앞 커피숍" 
               disabled={isSubmitting}
-              className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+              className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-primary focus:bg-white transition-all"
               value={formData.location} 
               onChange={e => setFormData({...formData, location: e.target.value})}
             />
@@ -199,7 +199,7 @@ function UploadPage() {
               type="text" 
               placeholder="예: 2026-05-19 14:30" 
               disabled={isSubmitting}
-              className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-[#FFD18F] focus:bg-white transition-all"
+              className="w-full p-4 bg-gray-50 rounded-xl outline-none text-sm border border-gray-100 focus:border-primary focus:bg-white transition-all"
               value={formData.time} 
               onChange={e => setFormData({...formData, time: e.target.value})}
             />

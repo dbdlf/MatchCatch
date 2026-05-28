@@ -156,8 +156,8 @@ function ProfilePage() {
         </div>
 
         <div className="text-center">
-          <div className="w-14 h-14 rounded-full border-2 border-[#FFD18F] flex items-center justify-center mb-1">
-            <span className="text-xs font-bold text-[#FFD18F]">{userData.temperature}℃</span>
+          <div className="w-14 h-14 rounded-full border-2 border-primary flex items-center justify-center mb-1">
+            <span className="text-xs font-bold text-primary">{userData.temperature}℃</span>
           </div>
           <span className="text-[10px] text-gray-400 font-bold">온도</span>
         </div>
@@ -214,7 +214,7 @@ function ProfilePage() {
                 <div key={review.id} className="p-4 border border-gray-100 rounded-2xl bg-white shadow-sm">
                   <div className="flex items-center mb-2">
                     <span className="text-sm mr-2">{review.type === 'POSITIVE' ? '😊' : '🙁'}</span>
-                    <span className={`text-[11px] font-bold ${review.type === 'POSITIVE' ? 'text-[#FFD18F]' : 'text-red-400'}`}>
+                    <span className={`text-[11px] font-bold ${review.type === 'POSITIVE' ? 'text-primary' : 'text-red-400'}`}>
                       {review.type === 'POSITIVE' ? '만족' : '불만족'}
                     </span>
                   </div>

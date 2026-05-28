@@ -20,7 +20,7 @@ function ChatListPage() {
           <h1 className="text-2xl font-bold">채팅</h1>
           <button 
             onClick={() => navigate('/matchmanagement')}
-            className="bg-[#FFD18F] text-black px-4 py-2 rounded-lg text-sm font-bold shadow-sm"
+            className="bg-primary text-black px-4 py-2 rounded-lg text-sm font-bold shadow-sm"
           >
             요청 관리
           </button>

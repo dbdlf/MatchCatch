@@ -88,7 +88,7 @@ function MatchManagementPage() {
                     거절
                   </button>
                   <button 
-                    className="flex-1 py-2.5 bg-[#FFD18F] text-black rounded-xl text-xs font-bold hover:brightness-95 transition-colors shadow-sm" 
+                    className="flex-1 py-2.5 bg-primary text-black rounded-xl text-xs font-bold hover:brightness-95 transition-colors shadow-sm" 
                     onClick={(e) => {
                       e.stopPropagation();
                       alert("수락되었습니다! 채팅방이 생성됩니다.");

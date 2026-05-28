@@ -119,7 +119,7 @@ function ChatDetailPage() {
           {itemStatus === "MATCHING" ? (
             <button 
               onClick={handleCompleteDelivery}
-              className="bg-[#FFD18F] text-black px-3 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-[#ffc67a] transition-colors"
+              className="bg-primary text-black px-3 py-2 rounded-lg text-xs font-bold shadow-sm hover:bg-[#ffc67a] transition-colors"
             >
               상태변경
             </button>
@@ -157,7 +157,7 @@ function ChatDetailPage() {
                             targetUserId: chatRoomInfo.partnerId
                           }
                         })}
-                        className="w-full bg-[#FFD18F] text-black text-xs font-bold py-2 rounded-xl hover:brightness-95 active:scale-[0.98] transition-all"
+                        className="w-full bg-primary text-black text-xs font-bold py-2 rounded-xl hover:brightness-95 active:scale-[0.98] transition-all"
                       >
                         후기 작성하러 가기
                       </button>
@@ -171,7 +171,7 @@ function ChatDetailPage() {
                 <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
                   <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm font-medium shadow-sm break-words ${
                     isMe 
-                      ? 'bg-[#FFD18F] text-black rounded-tr-none' 
+                      ? 'bg-primary text-black rounded-tr-none' 
                       : 'bg-gray-100 text-gray-800 rounded-tl-none'
                   }`}>
                     {msg.text}
@@ -195,7 +195,7 @@ function ChatDetailPage() {
             onChange={(e) => setInputText(e.target.value)}
             className="flex-1 bg-transparent outline-none text-sm font-medium"
           />
-          <button type="submit" disabled={!inputText.trim()} className="ml-2 text-[#FFD18F] font-bold text-sm hover:brightness-90 disabled:opacity-50">
+          <button type="submit" disabled={!inputText.trim()} className="ml-2 text-primary font-bold text-sm hover:brightness-90 disabled:opacity-50">
             전송
           </button>
         </div>

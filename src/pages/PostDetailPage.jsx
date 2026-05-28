@@ -39,7 +39,7 @@ function PostDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-white">
         <p className="text-gray-500 mb-4 font-medium">잘못된 접근입니다.</p>
-        <button onClick={() => navigate('/home')} className="bg-[#FFD18F] px-4 py-2 rounded-lg font-bold text-sm shadow-sm">
+        <button onClick={() => navigate('/home')} className="bg-primary px-4 py-2 rounded-lg font-bold text-sm shadow-sm">
           홈으로 가기
         </button>
       </div>
@@ -95,11 +95,11 @@ function PostDetailPage() {
         ) : <div className="w-8"></div>}
         
         {isAuthor ? (
-          <button onClick={handleEditPost} className="bg-[#FFD18F] text-black px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm">
+          <button onClick={handleEditPost} className="bg-primary text-black px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm">
             게시글 수정
           </button>
         ) : (
-          <button onClick={handleSendRequest} className="bg-[#FFD18F] text-black px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm">
+          <button onClick={handleSendRequest} className="bg-primary text-black px-4 py-1.5 rounded-lg text-sm font-bold shadow-sm">
             요청 보내기
           </button>
         )}

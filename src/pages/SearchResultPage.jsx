@@ -91,14 +91,14 @@ function SearchResultPage() {
       <div className="flex items-center px-6 py-6 border-b border-gray-100 bg-white">
         <h1 className="text-xl font-bold relative">
           검색결과
-          <span className="absolute bottom-0 left-0 w-full h-1 bg-[#FFD18F] -mb-1 opacity-50"></span>
+          <span className="absolute bottom-0 left-0 w-full h-1 bg-primary -mb-1 opacity-50"></span>
         </h1>
       </div>
 
       <div className="flex-1 overflow-y-auto px-6 py-8 pb-24 bg-white">
         {isLoading ? (
           <div className="h-full flex flex-col items-center justify-center space-y-4">
-            <div className="w-12 h-12 border-4 border-[#FFD18F] border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             <p className="text-gray-500 font-medium">AI가 유사한 물품을 분석 중입니다...</p>
           </div>
         ) : results.length > 0 ? (
@@ -106,7 +106,7 @@ function SearchResultPage() {
             {results.map((item) => (
               <div key={item.id} className="relative flex p-4 border border-gray-200 rounded-xl items-start bg-white shadow-sm transition-transform active:scale-[0.98] overflow-hidden">
                 
-                <div className="absolute top-0 right-0 bg-[#FFD18F] px-3 py-1 rounded-bl-xl font-bold text-[10px] text-gray-900 shadow-sm z-10">
+                <div className="absolute top-0 right-0 bg-primary px-3 py-1 rounded-bl-xl font-bold text-[10px] text-gray-900 shadow-sm z-10">
                   일치율 {item.similarity_score ? item.similarity_score.toFixed(1) : '0.0'}%
                 </div>
 
