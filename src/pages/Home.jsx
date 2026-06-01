@@ -6,28 +6,23 @@ const HomePage = () => {
   const navigate = useNavigate();
   const cameraInputRef = useRef(null);
 
-  // 습득물: 버튼 클릭 → 카메라 즉시 실행
   const handleFoundClick = () => {
     cameraInputRef.current?.click();
   };
 
-  // 카메라에서 사진 선택 완료 → 파일 들고 Upload 페이지로 이동
   const handleCameraCapture = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     navigate('/upload', { state: { mode: 'found', capturedFile: file } });
-    // input 초기화 (같은 파일 재선택 가능하도록)
     e.target.value = '';
   };
 
-  // 분실물: 바로 Upload 페이지로 이동 (갤러리 선택은 Upload에서)
   const handleLostClick = () => {
     navigate('/upload', { state: { mode: 'lost' } });
   };
 
   return (
     <Layout>
-      {/* 습득물 전용 카메라 input — 홈에 배치해야 사용자 클릭과 동일 스택 유지 */}
       <input
         ref={cameraInputRef}
         type="file"
@@ -37,14 +32,16 @@ const HomePage = () => {
         onChange={handleCameraCapture}
       />
 
-      <div className="flex-1 flex flex-col min-h-0 bg-white">
+      <div className="flex-1 flex flex-col min-h-0 bg-white relative overflow-hidden">
 
-        {/* 상단 헤더 영역 */}
-        <div className="relative px-6 pt-14 pb-10 overflow-hidden">
-          {/* 배경 장식 원 */}
-          <div className="absolute -top-16 -right-16 w-56 h-56 rounded-full bg-primary opacity-[0.06] pointer-events-none" />
-          <div className="absolute -top-6 -right-4 w-32 h-32 rounded-full bg-primary-light opacity-[0.08] pointer-events-none" />
+        {/* 배경 장식 — 오른쪽 상단에 크고 과감한 원 하나만 */}
+        <div
+          className="absolute -top-32 -right-32 w-80 h-80 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.15) 0%, rgba(70,75,170,0.06) 55%, transparent 75%)' }}
+        />
 
+        {/* 상단 헤더 */}
+        <div className="relative px-6 pt-14 pb-10">
           <p className="text-xs font-semibold tracking-widest text-primary-light uppercase mb-2">
             분실물 매칭 서비스
           </p>
@@ -60,7 +57,7 @@ const HomePage = () => {
           </p>
         </div>
 
-        {/* 버튼 카드 영역 */}
+        {/* 카드 영역 */}
         <div className="flex-1 flex flex-col justify-center px-6 gap-4 pb-32">
 
           {/* 습득물 등록 카드 */}
@@ -69,14 +66,12 @@ const HomePage = () => {
             className="group relative w-full rounded-2xl overflow-hidden text-left transition-all active:scale-[0.98]"
             style={{ boxShadow: '0 4px 24px rgba(70,75,170,0.18)' }}
           >
-            <div className="bg-gradient-to-br from-primary to-primary-light p-6">
-              {/* 카드 내 장식 */}
-              <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-white opacity-[0.06] translate-x-8 -translate-y-8" />
-              <div className="absolute bottom-0 right-8 w-20 h-20 rounded-full bg-white opacity-[0.06] translate-y-6" />
+            <div className="bg-gradient-to-br from-primary to-primary-light p-6 relative overflow-hidden">
+              {/* 카드 내부 원 — 크고 하나만 */}
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-white opacity-[0.07] pointer-events-none" />
 
               <div className="relative">
                 <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center mb-4">
-                  {/* 카메라 아이콘 */}
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
                     <circle cx="12" cy="13" r="4"/>
@@ -97,12 +92,12 @@ const HomePage = () => {
             className="group relative w-full rounded-2xl overflow-hidden text-left transition-all active:scale-[0.98] border border-gray-100"
             style={{ boxShadow: '0 2px 16px rgba(0,0,0,0.06)' }}
           >
-            <div className="bg-white p-6">
-              <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-primary opacity-[0.03] translate-x-8 -translate-y-8" />
+            <div className="bg-white p-6 relative overflow-hidden">
+              {/* 카드 내부 원 — 크고 하나만 */}
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-primary opacity-[0.04] pointer-events-none" />
 
               <div className="relative">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  {/* 검색 아이콘 */}
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#464BAA" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="11" cy="11" r="8"/>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"/>

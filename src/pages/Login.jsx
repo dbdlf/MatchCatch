@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { authApi } from '../api'; 
+import { authApi } from '../api';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -14,14 +14,11 @@ const LoginPage = () => {
     e.preventDefault();
     if (userId.trim() === '' || password.trim() === '') {
       return alert('아이디와 비밀번호를 모두 입력해주세요!');
-    } 
-
+    }
     try {
       setIsLoading(true);
       const response = await authApi.login(userId, password);
-      if (response.success) {
-        navigate('/home');
-      }
+      if (response.success) navigate('/home');
     } catch (error) {
       alert(error.message);
     } finally {
@@ -31,19 +28,17 @@ const LoginPage = () => {
 
   return (
     <Layout hideNav>
-      <div className="flex-1 flex flex-col bg-white h-full overflow-y-auto relative">
+      <div className="flex-1 flex flex-col bg-white h-full overflow-hidden relative">
 
-        {/* 배경 장식 */}
-        <div className="absolute top-0 left-0 right-0 h-72 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-primary opacity-[0.07]" />
-          <div className="absolute -top-8 right-8 w-40 h-40 rounded-full bg-primary-light opacity-[0.08]" />
-          <div className="absolute top-32 left-1/2 -translate-x-1/2 w-96 h-1 bg-gradient-to-r from-transparent via-primary/10 to-transparent" />
-        </div>
+        {/* 배경 장식 — 오른쪽 상단에 크고 과감한 원 하나 */}
+        <div
+          className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.18) 0%, rgba(70,75,170,0.07) 60%, transparent 80%)' }}
+        />
 
-        {/* 상단 로고 영역 */}
+        {/* 로고 영역 */}
         <div className="relative z-10 flex flex-col items-center pt-20 pb-10 px-6">
-          {/* 아이콘 */}
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center mb-5 shadow-lg">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-light flex items-center justify-center mb-5 shadow-lg shadow-primary/25">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="11" cy="11" r="8"/>
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -57,23 +52,27 @@ const LoginPage = () => {
           <p className="text-xs text-gray-400 mt-2 font-medium tracking-wide">분실물 매칭 서비스</p>
         </div>
 
-        {/* 폼 영역 */}
-        <div className="flex-1 flex flex-col px-6">
+        {/* 폼 */}
+        <div className="flex-1 flex flex-col px-6 overflow-y-auto">
           <div className="space-y-4">
-            {/* 아이디 입력 */}
-            <div className="relative">
+
+            {/* 아이디 */}
+            <div>
               <label className={`block text-xs font-bold mb-1.5 transition-colors ${focusedField === 'userId' ? 'text-primary' : 'text-gray-400'}`}>
                 아이디
               </label>
-              <div className={`flex items-center border-2 rounded-2xl px-4 py-3.5 transition-all bg-gray-50 ${
-                focusedField === 'userId' ? 'border-primary bg-white shadow-sm shadow-primary/10' : 'border-transparent'
+              <div className={`flex items-center rounded-2xl px-4 py-3.5 transition-all border-2 ${
+                focusedField === 'userId'
+                  ? 'border-primary bg-white shadow-sm shadow-primary/10'
+                  : 'border-transparent bg-gray-50'
               }`}>
-                <svg className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors ${focusedField === 'userId' ? 'text-primary' : 'text-gray-300'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors ${focusedField === 'userId' ? 'text-primary' : 'text-gray-300'}`}
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
                 </svg>
-                <input 
+                <input
                   className="flex-1 bg-transparent outline-none text-sm font-medium text-gray-800 placeholder:text-gray-300"
-                  type="text" 
+                  type="text"
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
                   onFocus={() => setFocusedField('userId')}
@@ -84,20 +83,23 @@ const LoginPage = () => {
               </div>
             </div>
 
-            {/* 비밀번호 입력 */}
-            <div className="relative">
+            {/* 비밀번호 */}
+            <div>
               <label className={`block text-xs font-bold mb-1.5 transition-colors ${focusedField === 'password' ? 'text-primary' : 'text-gray-400'}`}>
                 비밀번호
               </label>
-              <div className={`flex items-center border-2 rounded-2xl px-4 py-3.5 transition-all bg-gray-50 ${
-                focusedField === 'password' ? 'border-primary bg-white shadow-sm shadow-primary/10' : 'border-transparent'
+              <div className={`flex items-center rounded-2xl px-4 py-3.5 transition-all border-2 ${
+                focusedField === 'password'
+                  ? 'border-primary bg-white shadow-sm shadow-primary/10'
+                  : 'border-transparent bg-gray-50'
               }`}>
-                <svg className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors ${focusedField === 'password' ? 'text-primary' : 'text-gray-300'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg className={`w-4 h-4 mr-3 flex-shrink-0 transition-colors ${focusedField === 'password' ? 'text-primary' : 'text-gray-300'}`}
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                 </svg>
-                <input 
+                <input
                   className="flex-1 bg-transparent outline-none text-sm font-medium text-gray-800 placeholder:text-gray-300"
-                  type="password" 
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setFocusedField('password')}
@@ -109,14 +111,14 @@ const LoginPage = () => {
             </div>
           </div>
 
-          {/* 로그인 버튼 */}
-          <div className="mt-8 space-y-4">
-            <button 
-              onClick={handleLogin} 
+          {/* 버튼 영역 */}
+          <div className="mt-8 space-y-3">
+            <button
+              onClick={handleLogin}
               disabled={isLoading}
-              className={`w-full py-4 rounded-2xl text-sm font-bold transition-all relative overflow-hidden ${
-                isLoading 
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+              className={`w-full py-4 rounded-2xl text-sm font-bold transition-all ${
+                isLoading
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   : 'bg-gradient-to-r from-primary to-primary-light text-white active:scale-[0.98] shadow-lg shadow-primary/25'
               }`}
             >
@@ -137,15 +139,14 @@ const LoginPage = () => {
               <div className="flex-1 h-px bg-gray-100" />
             </div>
 
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="flex items-center justify-center w-full py-4 rounded-2xl border-2 border-gray-100 text-sm font-bold text-gray-500 hover:border-primary/30 hover:text-primary transition-all"
             >
               회원가입
             </Link>
           </div>
 
-          {/* 하단 안내 */}
           <p className="text-center text-[11px] text-gray-300 mt-8 pb-8 font-medium">
             충남대학교 분실물 매칭 서비스
           </p>

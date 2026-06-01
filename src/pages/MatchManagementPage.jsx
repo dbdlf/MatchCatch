@@ -117,7 +117,7 @@ function MatchManagementPage() {
                     </p>
                   </div>
                 </div>
-                <span className="text-xs px-3 py-1 bg-amber-50 text-amber-600 font-bold rounded-full">수락 대기 중</span>
+                <span className="text-xs px-3 py-1 bg-primary text-white font-bold rounded-full">수락 대기 중</span>
               </div>
             </div>
           )}
