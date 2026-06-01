@@ -9,16 +9,11 @@ export default {
       colors: {
         white: "#fff",
         black: "#000",
-
-        primary: {
-          DEFAULT: '#464BAA',
-          light: '#7B8FE0',
-          darker: '#3B3F90',
-        }
+        // ✅ 객체 대신 flat하게 분리
+        primary: '#464BAA',
+        'primary-light': '#7B8FE0',
+        'primary-dark': '#3B3F90',
       },
-      fontFamily: {
-        inter: "Inter"
-      }
     },
   },
   plugins: [],
