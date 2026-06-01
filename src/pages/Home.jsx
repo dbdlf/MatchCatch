@@ -27,14 +27,14 @@ const HomePage = () => {
           {/* 습득물 등록: 'found' 모드로 이동 */}
           <button 
             onClick={() => handleUpload('found')}
-            className="w-full bg-primary border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-primary-darker transition-colors shadow-sm">
+            className="w-full bg-primary border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-primary-dark transition-colors shadow-sm">
             습득물 등록
           </button>
           
           {/* 분실물 검색: 'lost' 모드로 이동 */}
           <button 
             onClick={() => handleUpload('lost')}
-            className="w-full bg-primary border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-primary-darker transition-colors shadow-sm">
+            className="w-full bg-primary border border-gray-600 text-black py-8 rounded-md text-xl font-medium hover:bg-primary-dark transition-colors shadow-sm">
             분실물 검색
           </button>
         </div>
