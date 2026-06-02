@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { itemApi, analyzeImage } from '../api';
+import exifr from 'exifr';
 
 // ─── 유틸 ────────────────────────────────────────────────────────────────────
 
@@ -61,7 +62,35 @@ async function reverseGeocode(lat, lng) {
   return parts.join(' ') || data.display_name || '';
 }
 
-// ─── 날짜/시간 피커 모달 ────────────────────────────────────────────────────
+// ─── EXIF에서 GPS + 촬영시각 추출 ───────────────────────────────────────────
+
+async function extractExifData(file) {
+  try {
+    const exif = await exifr.parse(file, { gps: true, pick: ['DateTimeOriginal', 'latitude', 'longitude'] });
+    if (!exif) return null;
+
+    const result = {};
+
+    // 촬영 시각
+    if (exif.DateTimeOriginal instanceof Date) {
+      result.time = formatDatetime(exif.DateTimeOriginal);
+    }
+
+    // GPS 좌표 → 주소
+    if (exif.latitude && exif.longitude) {
+      try {
+        result.location = await reverseGeocode(exif.latitude, exif.longitude);
+      } catch {
+        // 역지오코딩 실패는 무시, 좌표라도 저장
+        result.location = `${exif.latitude.toFixed(5)}, ${exif.longitude.toFixed(5)}`;
+      }
+    }
+
+    return result;
+  } catch {
+    return null; // EXIF 없는 파일이면 null 반환
+  }
+}
 
 const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -336,9 +365,7 @@ function UploadPage() {
     if (capturedFile) {
       processFile(capturedFile);
     }
-    // 페이지 진입 시 위치 자동 요청
-    fetchLocation();
-    // 현재 시각 기본값
+    // 현재 시각 기본값 (위치는 버튼 탭으로만 요청 — iOS 사파리 정책)
     setFormData(prev => ({ ...prev, time: formatDatetime(new Date()) }));
   }, []);
 
@@ -347,13 +374,20 @@ function UploadPage() {
     setAnalyzeError('');
     setIsImageAnalyzing(true);
     try {
-      const base64 = await fileToBase64(file);
-      const aiResult = await analyzeImage(base64, file.type || 'image/jpeg');
+      // EXIF 추출 + AI 분석 병렬 실행
+      const [exifData, aiResult] = await Promise.all([
+        extractExifData(file),
+        fileToBase64(file).then(base64 => analyzeImage(base64, file.type || 'image/jpeg')),
+      ]);
+
       setFormData(prev => ({
         ...prev,
         content:  aiResult.description || prev.content,
         title:    mode === 'lost' ? (aiResult.title    || prev.title)    : prev.title,
         keywords: mode === 'lost' ? (aiResult.keywords || prev.keywords) : prev.keywords,
+        // EXIF에서 읽은 값 우선 적용, 없으면 기존값 유지
+        time:     exifData?.time     || prev.time,
+        location: exifData?.location || prev.location,
       }));
     } catch (err) {
       setAnalyzeError(`자동 분석 실패: ${err.message} — 직접 입력해 주세요.`);
@@ -555,7 +589,7 @@ function UploadPage() {
             >
               <div className="flex items-start gap-2 mt-1.5">
                 <input type="text"
-                  placeholder={isLocating ? '위치를 가져오는 중...' : '예: 충남대 정문 앞 커피숍'}
+                  placeholder={isLocating ? '위치를 가져오는 중...' : '현위치 버튼을 탭하거나 직접 입력하세요'}
                   disabled={isDisabled || isLocating}
                   className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
                   value={formData.location}
