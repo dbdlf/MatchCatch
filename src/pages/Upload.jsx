@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { itemApi, analyzeImage, getMockLocationAndTime } from '../api';
+import { itemApi, analyzeImage } from '../api';
+
+// ─── 유틸 ────────────────────────────────────────────────────────────────────
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -12,7 +14,273 @@ function fileToBase64(file) {
   });
 }
 
-// 포커스 상태에 따른 폼 행 스타일
+function formatDatetime(date) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function parseToDate(str) {
+  // "2026-06-02 14:30" → Date
+  if (!str) return new Date();
+  const [datePart, timePart] = str.split(' ');
+  const [y, m, d] = (datePart || '').split('-').map(Number);
+  const [h, min] = (timePart || '00:00').split(':').map(Number);
+  const dt = new Date(y, (m || 1) - 1, d || 1, h || 0, min || 0);
+  return isNaN(dt.getTime()) ? new Date() : dt;
+}
+
+// ─── Geolocation → Nominatim 역지오코딩 ────────────────────────────────────
+
+async function getCurrentLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('위치 서비스를 지원하지 않는 브라우저입니다.'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      err => reject(new Error('위치 권한이 거부되었거나 위치를 가져올 수 없습니다.')),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  });
+}
+
+async function reverseGeocode(lat, lng) {
+  const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ko`;
+  const res = await fetch(url, { headers: { 'Accept-Language': 'ko' } });
+  if (!res.ok) throw new Error('주소 변환 실패');
+  const data = await res.json();
+  // 건물명 > 도로명+번지 순으로 조합
+  const addr = data.address || {};
+  const parts = [
+    addr.amenity || addr.building || addr.shop || addr.office,
+    addr.road,
+    addr.quarter || addr.neighbourhood || addr.suburb,
+    addr.city || addr.town || addr.village,
+  ].filter(Boolean);
+  return parts.join(' ') || data.display_name || '';
+}
+
+// ─── 날짜/시간 피커 모달 ────────────────────────────────────────────────────
+
+const DAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+function DateTimePicker({ value, onChange, onClose }) {
+  const initial = parseToDate(value);
+  const [viewYear, setViewYear] = useState(initial.getFullYear());
+  const [viewMonth, setViewMonth] = useState(initial.getMonth()); // 0-based
+  const [selDate, setSelDate] = useState(
+    new Date(initial.getFullYear(), initial.getMonth(), initial.getDate())
+  );
+  const [selHour, setSelHour] = useState(initial.getHours());
+  const [selMin, setSelMin] = useState(initial.getMinutes());
+  const [tab, setTab] = useState('date'); // 'date' | 'time'
+
+  const hourRef = useRef(null);
+  const minRef = useRef(null);
+
+  // 달력 날짜 계산
+  const firstDay = new Date(viewYear, viewMonth, 1).getDay();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstDay; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  const prevMonth = () => {
+    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
+    else setViewMonth(m => m - 1);
+  };
+  const nextMonth = () => {
+    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
+    else setViewMonth(m => m + 1);
+  };
+
+  const isSelected = (d) =>
+    d &&
+    selDate.getFullYear() === viewYear &&
+    selDate.getMonth() === viewMonth &&
+    selDate.getDate() === d;
+
+  const isToday = (d) => {
+    const t = new Date();
+    return d && t.getFullYear() === viewYear && t.getMonth() === viewMonth && t.getDate() === d;
+  };
+
+  // 시간 스크롤 — 항목 클릭 시 선택
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const mins = Array.from({ length: 12 }, (_, i) => i * 5); // 5분 단위
+
+  // 선택된 시간 항목으로 스크롤
+  useEffect(() => {
+    if (tab === 'time') {
+      hourRef.current?.children[selHour]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      const minIdx = mins.indexOf(Math.round(selMin / 5) * 5);
+      if (minIdx >= 0) minRef.current?.children[minIdx]?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, [tab]);
+
+  const handleConfirm = () => {
+    const d = new Date(selDate.getFullYear(), selDate.getMonth(), selDate.getDate(), selHour, selMin);
+    onChange(formatDatetime(d));
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center"
+      style={{ background: 'rgba(0,0,0,0.35)' }}
+      onClick={e => e.target === e.currentTarget && onClose()}
+    >
+      <div className="w-full max-w-[412px] bg-white rounded-t-3xl overflow-hidden shadow-2xl"
+        style={{ maxHeight: '85vh' }}>
+
+        {/* 핸들 */}
+        <div className="flex justify-center pt-3 pb-1">
+          <div className="w-10 h-1 bg-gray-200 rounded-full" />
+        </div>
+
+        {/* 탭 */}
+        <div className="flex px-5 pt-2 pb-0 gap-2">
+          {[
+            { key: 'date', label: '📅 날짜' },
+            { key: 'time', label: '⏰ 시간' },
+          ].map(t => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                tab === t.key
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'bg-gray-100 text-gray-500'
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 현재 선택값 요약 */}
+        <div className="mx-5 mt-3 px-4 py-2.5 bg-gray-50 rounded-xl flex items-center justify-between">
+          <span className="text-xs text-gray-400 font-medium">선택된 날짜/시간</span>
+          <span className="text-xs font-black text-primary">
+            {`${selDate.getFullYear()}-${String(selDate.getMonth()+1).padStart(2,'0')}-${String(selDate.getDate()).padStart(2,'0')} ${String(selHour).padStart(2,'0')}:${String(selMin).padStart(2,'0')}`}
+          </span>
+        </div>
+
+        {/* 날짜 탭 */}
+        {tab === 'date' && (
+          <div className="px-5 pt-3 pb-2">
+            {/* 월 이동 */}
+            <div className="flex items-center justify-between mb-3">
+              <button onClick={prevMonth} className="w-8 h-8 flex items-center justify-center rounded-xl bg-gray-100 active:scale-90 transition-transform">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <span className="text-sm font-black text-gray-900">
+                {viewYear}년 {viewMonth + 1}월
+              </span>
+              <button onClick={nextMonth} className="w-8 h-8 flex items-center justify-center rounded-xl bg-gray-100 active:scale-90 transition-transform">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+
+            {/* 요일 헤더 */}
+            <div className="grid grid-cols-7 mb-1">
+              {DAYS.map((d, i) => (
+                <div key={d} className={`text-center text-[10px] font-bold py-1 ${i === 0 ? 'text-red-400' : i === 6 ? 'text-blue-400' : 'text-gray-400'}`}>
+                  {d}
+                </div>
+              ))}
+            </div>
+
+            {/* 날짜 셀 */}
+            <div className="grid grid-cols-7 gap-y-1">
+              {cells.map((d, i) => {
+                const col = i % 7;
+                return (
+                  <button
+                    key={i}
+                    disabled={!d}
+                    onClick={() => d && setSelDate(new Date(viewYear, viewMonth, d))}
+                    className={`relative aspect-square flex items-center justify-center rounded-xl text-xs font-bold transition-all active:scale-90 ${
+                      !d ? '' :
+                      isSelected(d) ? 'bg-primary text-white shadow-sm' :
+                      isToday(d) ? 'border-2 border-primary/40 text-primary' :
+                      col === 0 ? 'text-red-400' :
+                      col === 6 ? 'text-blue-400' :
+                      'text-gray-700'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 시간 탭 */}
+        {tab === 'time' && (
+          <div className="px-5 pt-3 pb-2">
+            <div className="flex gap-3" style={{ height: '200px' }}>
+              {/* 시 */}
+              <div className="flex-1 flex flex-col">
+                <p className="text-[10px] font-bold text-gray-400 text-center mb-2">시</p>
+                <div ref={hourRef} className="flex-1 overflow-y-auto space-y-1 scrollbar-none"
+                  style={{ scrollbarWidth: 'none' }}>
+                  {hours.map(h => (
+                    <button
+                      key={h}
+                      onClick={() => setSelHour(h)}
+                      className={`w-full py-2 rounded-xl text-sm font-bold transition-all active:scale-95 ${
+                        selHour === h ? 'bg-primary text-white shadow-sm' : 'text-gray-600'
+                      }`}
+                    >
+                      {String(h).padStart(2, '0')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-center text-gray-300 font-black text-lg pb-2">:</div>
+
+              {/* 분 (5분 단위) */}
+              <div className="flex-1 flex flex-col">
+                <p className="text-[10px] font-bold text-gray-400 text-center mb-2">분</p>
+                <div ref={minRef} className="flex-1 overflow-y-auto space-y-1 scrollbar-none"
+                  style={{ scrollbarWidth: 'none' }}>
+                  {mins.map(m => (
+                    <button
+                      key={m}
+                      onClick={() => setSelMin(m)}
+                      className={`w-full py-2 rounded-xl text-sm font-bold transition-all active:scale-95 ${
+                        selMin === m || (selMin >= m && selMin < m + 5 && m === mins[mins.length-1]) ? 'bg-primary text-white shadow-sm' : 'text-gray-600'
+                      }`}
+                    >
+                      {String(m).padStart(2, '0')}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 확인 버튼 */}
+        <div className="px-5 py-4">
+          <button
+            onClick={handleConfirm}
+            className="w-full py-3.5 bg-gradient-to-r from-primary to-primary-light text-white rounded-2xl font-bold text-sm shadow-sm active:scale-[0.98] transition-transform"
+          >
+            선택 완료
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── FormRow ─────────────────────────────────────────────────────────────────
+
 const FormRow = ({ label, required, focused, children }) => (
   <div className={`px-4 py-4 transition-colors ${focused ? 'bg-primary/[0.025]' : ''}`}>
     <label className={`text-[11px] font-bold uppercase tracking-wider transition-colors ${focused ? 'text-primary' : 'text-gray-400'}`}>
@@ -23,6 +291,8 @@ const FormRow = ({ label, required, focused, children }) => (
   </div>
 );
 
+// ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
+
 function UploadPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -31,9 +301,12 @@ function UploadPage() {
   const [mode] = useState(location.state?.mode || 'found');
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageAnalyzing, setIsImageAnalyzing] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [analyzeError, setAnalyzeError] = useState('');
+  const [locationError, setLocationError] = useState('');
   const [focusedField, setFocusedField] = useState(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -43,9 +316,30 @@ function UploadPage() {
     time: '',
   });
 
+  // 위치 가져오기
+  const fetchLocation = useCallback(async () => {
+    setIsLocating(true);
+    setLocationError('');
+    try {
+      const { lat, lng } = await getCurrentLocation();
+      const address = await reverseGeocode(lat, lng);
+      setFormData(prev => ({ ...prev, location: address }));
+    } catch (err) {
+      setLocationError(err.message);
+    } finally {
+      setIsLocating(false);
+    }
+  }, []);
+
   useEffect(() => {
     const capturedFile = location.state?.capturedFile;
-    if (capturedFile) processFile(capturedFile);
+    if (capturedFile) {
+      processFile(capturedFile);
+    }
+    // 페이지 진입 시 위치 자동 요청
+    fetchLocation();
+    // 현재 시각 기본값
+    setFormData(prev => ({ ...prev, time: formatDatetime(new Date()) }));
   }, []);
 
   const processFile = async (file) => {
@@ -54,14 +348,9 @@ function UploadPage() {
     setIsImageAnalyzing(true);
     try {
       const base64 = await fileToBase64(file);
-      const [locationTime, aiResult] = await Promise.all([
-        getMockLocationAndTime(),
-        analyzeImage(base64, file.type || 'image/jpeg'),
-      ]);
+      const aiResult = await analyzeImage(base64, file.type || 'image/jpeg');
       setFormData(prev => ({
         ...prev,
-        time:     locationTime.datetime,
-        location: locationTime.location,
         content:  aiResult.description || prev.content,
         title:    mode === 'lost' ? (aiResult.title    || prev.title)    : prev.title,
         keywords: mode === 'lost' ? (aiResult.keywords || prev.keywords) : prev.keywords,
@@ -124,21 +413,21 @@ function UploadPage() {
 
   return (
     <Layout>
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept="image/*"
-        className="hidden"
-      />
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+
+      {/* 날짜/시간 피커 모달 */}
+      {showPicker && (
+        <DateTimePicker
+          value={formData.time}
+          onChange={v => setFormData(prev => ({ ...prev, time: v }))}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
 
       {/* 헤더 */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
-        <button
-          onClick={() => navigate(-1)}
-          disabled={isDisabled}
-          className="p-2 -ml-2 rounded-xl disabled:opacity-40 active:scale-95 transition-transform"
-        >
+        <button onClick={() => navigate(-1)} disabled={isDisabled}
+          className="p-2 -ml-2 rounded-xl disabled:opacity-40 active:scale-95 transition-transform">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M15 18l-6-6 6-6" />
           </svg>
@@ -154,15 +443,12 @@ function UploadPage() {
           </div>
         </div>
 
-        <button
-          disabled={!isFormValid() || isDisabled}
-          onClick={handleSubmit}
+        <button disabled={!isFormValid() || isDisabled} onClick={handleSubmit}
           className={`px-4 py-2 rounded-xl font-bold text-xs transition-all active:scale-95 ${
             !isFormValid() || isDisabled
               ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
               : 'bg-gradient-to-r from-primary to-primary-light text-white shadow-sm shadow-primary/25'
-          }`}
-        >
+          }`}>
           {isSubmitting
             ? (mode === 'found' ? '등록 중...' : '검색 중...')
             : (mode === 'found' ? '등록 완료' : '검색하기')}
@@ -171,20 +457,12 @@ function UploadPage() {
 
       <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4 bg-gray-50 pb-24">
 
-        {/* 이미지 업로드 영역 */}
+        {/* 이미지 업로드 */}
         <div
           onClick={() => !isDisabled && fileInputRef.current?.click()}
           className={`w-full aspect-video rounded-2xl overflow-hidden transition-all active:scale-[0.99] ${
             isDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
-          } ${
-            selectedImage
-              ? 'shadow-md'
-              : 'border-2 border-dashed bg-white shadow-sm'
-          } ${
-            !selectedImage && focusedField === null
-              ? 'border-gray-200'
-              : !selectedImage ? 'border-primary/30' : ''
-          }`}
+          } ${selectedImage ? 'shadow-md' : 'border-2 border-dashed bg-white shadow-sm border-gray-200'}`}
         >
           {selectedImage ? (
             <div className="relative w-full h-full">
@@ -235,92 +513,113 @@ function UploadPage() {
           </div>
         )}
 
-        {/* 폼 카드 — 각 행에 포커스 효과 */}
-        <div
-          className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
-          style={{ boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}
-        >
-          {/* 좌측 컬러 바 (포커스 시 나타남) */}
+        {/* 폼 카드 */}
+        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden"
+          style={{ boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}>
           <div className="divide-y divide-gray-50">
 
             {mode === 'lost' && (
               <FormRow label="제목" required focused={focusedField === 'title'}>
-                <input
-                  type="text"
-                  placeholder="물품 제목을 입력하세요"
-                  disabled={isDisabled}
+                <input type="text" placeholder="물품 제목을 입력하세요" disabled={isDisabled}
                   className="w-full mt-1.5 bg-transparent outline-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
                   value={formData.title}
                   onFocus={() => setFocusedField('title')}
                   onBlur={() => setFocusedField(null)}
-                  onChange={e => setFormData({ ...formData, title: e.target.value })}
-                />
+                  onChange={e => setFormData({ ...formData, title: e.target.value })} />
               </FormRow>
             )}
 
             <FormRow label="상세 내용" required focused={focusedField === 'content'}>
-              <textarea
-                placeholder="물품에 대한 상세 설명을 입력하세요"
-                disabled={isDisabled}
+              <textarea placeholder="물품에 대한 상세 설명을 입력하세요" disabled={isDisabled}
                 className="w-full mt-1.5 h-24 bg-transparent outline-none resize-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
                 value={formData.content}
                 onFocus={() => setFocusedField('content')}
                 onBlur={() => setFocusedField(null)}
-                onChange={e => setFormData({ ...formData, content: e.target.value })}
-              />
+                onChange={e => setFormData({ ...formData, content: e.target.value })} />
             </FormRow>
 
             {mode === 'lost' && (
               <FormRow label="키워드 · 쉼표로 구분" required focused={focusedField === 'keywords'}>
-                <input
-                  type="text"
-                  placeholder="예: 지갑, 검정, 가죽"
-                  disabled={isDisabled}
+                <input type="text" placeholder="예: 지갑, 검정, 가죽" disabled={isDisabled}
                   className="w-full mt-1.5 bg-transparent outline-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
                   value={formData.keywords}
                   onFocus={() => setFocusedField('keywords')}
                   onBlur={() => setFocusedField(null)}
-                  onChange={e => setFormData({ ...formData, keywords: e.target.value })}
-                />
+                  onChange={e => setFormData({ ...formData, keywords: e.target.value })} />
               </FormRow>
             )}
 
+            {/* 장소 — 위치 버튼 포함 */}
             <FormRow
               label={mode === 'found' ? '습득 장소 · 선택' : '분실 예상 장소 · 선택'}
               focused={focusedField === 'location'}
             >
-              <input
-                type="text"
-                placeholder="예: 충남대 정문 앞 커피숍"
-                disabled={isDisabled}
-                className="w-full mt-1.5 bg-transparent outline-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
-                value={formData.location}
-                onFocus={() => setFocusedField('location')}
-                onBlur={() => setFocusedField(null)}
-                onChange={e => setFormData({ ...formData, location: e.target.value })}
-              />
+              <div className="flex items-start gap-2 mt-1.5">
+                <input type="text"
+                  placeholder={isLocating ? '위치를 가져오는 중...' : '예: 충남대 정문 앞 커피숍'}
+                  disabled={isDisabled || isLocating}
+                  className="flex-1 bg-transparent outline-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
+                  value={formData.location}
+                  onFocus={() => setFocusedField('location')}
+                  onBlur={() => setFocusedField(null)}
+                  onChange={e => setFormData({ ...formData, location: e.target.value })} />
+                {/* 현재 위치 재요청 버튼 */}
+                <button
+                  type="button"
+                  onClick={fetchLocation}
+                  disabled={isLocating || isDisabled}
+                  className={`flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all active:scale-90 ${
+                    isLocating
+                      ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
+                      : 'bg-primary/10 text-primary'
+                  }`}
+                >
+                  {isLocating ? (
+                    <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"/>
+                    </svg>
+                  ) : (
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                    </svg>
+                  )}
+                  현위치
+                </button>
+              </div>
+              {locationError && (
+                <p className="text-[10px] text-red-400 font-medium mt-1">{locationError} — 직접 입력해 주세요</p>
+              )}
             </FormRow>
 
+            {/* 시간 — 달력/시간 피커 버튼 */}
             <FormRow
               label={mode === 'found' ? '습득 시간 · 선택' : '분실 예상 시간 · 선택'}
               focused={focusedField === 'time'}
             >
-              <input
-                type="text"
-                placeholder="예: 2026-05-19 14:30"
+              <button
+                type="button"
+                onClick={() => setShowPicker(true)}
                 disabled={isDisabled}
-                className="w-full mt-1.5 bg-transparent outline-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
-                value={formData.time}
                 onFocus={() => setFocusedField('time')}
                 onBlur={() => setFocusedField(null)}
-                onChange={e => setFormData({ ...formData, time: e.target.value })}
-              />
+                className="w-full mt-1.5 flex items-center justify-between group disabled:opacity-50"
+              >
+                <span className={`text-sm font-medium ${formData.time ? 'text-gray-800' : 'text-gray-300'}`}>
+                  {formData.time || '날짜/시간 선택'}
+                </span>
+                <span className="flex items-center gap-1 text-[10px] font-bold text-primary/70 bg-primary/8 px-2.5 py-1 rounded-lg flex-shrink-0">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  변경
+                </span>
+              </button>
             </FormRow>
 
           </div>
         </div>
 
-        {/* 하단 안내 */}
         {mode === 'found' && !selectedImage && (
           <p className="text-center text-[11px] text-gray-300 font-medium">
             사진을 먼저 업로드하면 AI가 자동으로 내용을 채워드려요
