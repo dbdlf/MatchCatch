@@ -112,15 +112,22 @@ function ChatDetailPage() {
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="font-bold text-xs text-gray-800 truncate">{chatRoomInfo.itemTitle}</h4>
-            <p className={`text-[10px] font-bold mt-0.5 ${itemStatus === 'DELIVERED' ? 'text-emerald-500' : 'text-amber-500'}`}>
-              {itemStatus === 'DELIVERED' ? '✓ 인도 완료' : '● 매칭 진행중'}
-            </p>
+            <div className="flex items-center gap-1 mt-0.5">
+              <span className={`inline-block w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                itemStatus === 'DELIVERED' ? 'bg-gray-300' : 'bg-primary'
+              }`} />
+              <p className={`text-[10px] font-bold ${
+                itemStatus === 'DELIVERED' ? 'text-gray-400' : 'text-primary'
+              }`}>
+                {itemStatus === 'DELIVERED' ? '인도 완료' : '매칭 진행중'}
+              </p>
+            </div>
           </div>
           
           {itemStatus === "MATCHING" ? (
             <button 
               onClick={handleCompleteDelivery}
-              className="flex-shrink-0 bg-primary text-white px-3.5 py-2 rounded-xl text-[11px] font-bold shadow-sm hover:brightness-105 transition-all active:scale-95"
+              className="flex-shrink-0 bg-primary text-white px-3.5 py-2 rounded-xl text-[11px] font-bold shadow-sm active:scale-95 transition-transform"
             >
               인도 완료
             </button>

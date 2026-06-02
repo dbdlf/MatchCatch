@@ -77,11 +77,11 @@ function SearchResultPage() {
     return () => clearTimeout(timer);
   }, [initialResults]);
 
-  // 일치율에 따른 색상
-  const getScoreStyle = (score) => {
-    if (score >= 80) return { bg: 'bg-emerald-500', text: 'text-white', label: '높음' };
-    if (score >= 50) return { bg: 'bg-amber-400', text: 'text-white', label: '보통' };
-    return { bg: 'bg-gray-300', text: 'text-gray-700', label: '낮음' };
+  // 일치율 → primary 단색 + opacity로 강도 표현
+  const getScoreOpacity = (score) => {
+    if (score >= 80) return 1;
+    if (score >= 50) return 0.5;
+    return 0.25;
   };
 
   return (
@@ -123,11 +123,12 @@ function SearchResultPage() {
         ) : results.length > 0 ? (
           <div className="space-y-3 pt-1">
             {results.map((item, index) => {
-              const scoreStyle = getScoreStyle(item.similarity_score || 0);
+              const score = item.similarity_score || 0;
+              const opacity = getScoreOpacity(score);
               return (
                 <div 
                   key={item.id} 
-                  className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow active:scale-[0.99]"
+                  className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm active:scale-[0.99] transition-transform"
                 >
                   <div className="flex p-4 gap-3.5">
                     {/* 이미지 */}
@@ -143,16 +144,19 @@ function SearchResultPage() {
                     {/* 내용 */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        {/* 일치율 바 */}
+                        {/* 일치율 바 — primary 단색, opacity로 강도 구분 */}
                         <div className="flex items-center gap-2 mb-2">
                           <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full rounded-full transition-all ${scoreStyle.bg}`}
-                              style={{ width: `${item.similarity_score || 0}%` }}
+                            <div
+                              className="h-full rounded-full bg-primary transition-all"
+                              style={{ width: `${score}%`, opacity }}
                             />
                           </div>
-                          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${scoreStyle.bg} ${scoreStyle.text}`}>
-                            {(item.similarity_score || 0).toFixed(0)}%
+                          <span
+                            className="text-[10px] font-black px-2 py-0.5 rounded-full bg-primary text-white"
+                            style={{ opacity }}
+                          >
+                            {score.toFixed(0)}%
                           </span>
                         </div>
 
