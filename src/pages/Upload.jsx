@@ -127,7 +127,7 @@ function DateTimePicker({ value, onChange, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center"
+      className="absolute inset-0 z-50 flex items-end justify-center"
       style={{ background: 'rgba(0,0,0,0.35)' }}
       onClick={e => e.target === e.currentTarget && onClose()}
     >
@@ -411,18 +411,17 @@ function UploadPage() {
 
   const isDisabled = isSubmitting || isImageAnalyzing;
 
-  return (
-    <Layout>
-      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+  const pickerModal = showPicker ? (
+    <DateTimePicker
+      value={formData.time}
+      onChange={v => setFormData(prev => ({ ...prev, time: v }))}
+      onClose={() => setShowPicker(false)}
+    />
+  ) : null;
 
-      {/* 날짜/시간 피커 모달 */}
-      {showPicker && (
-        <DateTimePicker
-          value={formData.time}
-          onChange={v => setFormData(prev => ({ ...prev, time: v }))}
-          onClose={() => setShowPicker(false)}
-        />
-      )}
+  return (
+    <Layout modal={pickerModal}>
+      <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
 
       {/* 헤더 */}
       <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
