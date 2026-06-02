@@ -46,7 +46,7 @@ const LoginPage = () => {
           </div>
           <h1 className="text-3xl font-black tracking-tight">
             <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-              Match Catch
+              Match Catch!!
             </span>
           </h1>
           <p className="text-xs text-gray-400 mt-2 font-medium tracking-wide">분실물 매칭 서비스</p>
