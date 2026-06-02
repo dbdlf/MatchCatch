@@ -47,7 +47,7 @@ const MOCK_AI_RESULTS = [
 export const analyzeImage = async (base64Image, mimeType) => {
   // Mock: 1~1.5초 딜레이 후 랜덤 결과 반환
   await delay(1000 + Math.random() * 500);
-  const result = MOCK_AI_RESULTS[Math.floor(Math.random() * MOCK_AI_RESULTS.length)];
+  const result = MOCK_AI_RESULTS[2]; // 네이비 백팩으로 고정 (index 2)
   return { ...result };
 
   // 🔄 실제 AI API 연동 시 위 두 줄을 지우고 아래처럼 교체하세요:
