@@ -15,7 +15,6 @@ function ProfilePage() {
   useEffect(() => {
     let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
     
-    // 고정 더미 데이터
     const hasDummy = mockItems.some(item => String(item.id).startsWith('dummy_1'));
     if (!hasDummy) {
       const initialDummies = [
@@ -92,10 +91,7 @@ function ProfilePage() {
 
   const handleActivityClick = (activityId) => {
     navigate('/postdetail', {
-      state: {
-        postId: activityId,
-        isAuthor: isOwnProfile
-      }
+      state: { postId: activityId, isAuthor: isOwnProfile }
     });
   };
 
@@ -111,120 +107,147 @@ function ProfilePage() {
 
   return (
     <Layout>
-      <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100 bg-white">
+      {/* 배경 장식 — 왼쪽 하단, 아주 크게 */}
+      <div
+        className="absolute -bottom-40 -left-32 w-[420px] h-[420px] rounded-full pointer-events-none z-0"
+        style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.11) 0%, rgba(70,75,170,0.04) 52%, transparent 68%)' }}
+      />
+
+      {/* 헤더 */}
+      <div className="relative z-10 flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-white">
         {!isOwnProfile ? (
-          <button onClick={() => navigate(-1)} className="p-1">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl active:scale-95 transition-transform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#374151" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
         ) : (
-          <div className="w-8"></div>
+          <div className="w-8" />
         )}
 
-        <h1 className="text-base font-bold text-gray-900">
+        <h1 className="text-sm font-black text-gray-900">
           {isOwnProfile ? "내 프로필" : `${userData.id}님의 프로필`}
         </h1>
 
         {isOwnProfile ? (
           <button 
             onClick={() => navigate('/profileedit', { state: { userId: userData.id } })}
-            className="text-sm font-medium text-gray-400 hover:text-black transition-colors"
+            className="text-xs font-bold text-gray-400 active:scale-95 transition-transform px-1"
           >
             편집
           </button>
         ) : (
-          <div className="w-8"></div>
+          <div className="w-8" />
         )}
       </div>
 
-      <div className="px-8 py-6 border-b border-gray-50 flex items-center justify-between bg-white">
-        <div className="flex items-center space-x-4">
-          <div className="w-20 h-20 bg-gray-200 rounded-full border-2 border-white shadow-sm overflow-hidden flex items-center justify-center">
-            <img 
-              src={isOwnProfile ? (location.state?.userImg || "/images/profile.png") : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} 
-              alt="프로필 사진" 
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
-              }}
-            />
+      {/* 프로필 카드 */}
+      <div className="relative z-10 px-6 py-6 border-b border-gray-50 bg-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* 아바타 */}
+            <div className="relative">
+              <div className="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden shadow-sm">
+                <img 
+                  src={isOwnProfile ? (location.state?.userImg || "/images/profile.png") : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} 
+                  alt="프로필 사진" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+                  }}
+                />
+              </div>
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-gray-900">{userData.id}</h2>
+              <p className="text-xs text-gray-400 font-medium mt-0.5">
+                {isOwnProfile ? '내 계정' : '상대방 프로필'}
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">{userData.id}</h2>
-          </div>
-        </div>
 
-        <div className="text-center">
-          <div className="w-14 h-14 rounded-full border-2 border-primary flex items-center justify-center mb-1">
-            <span className="text-xs font-bold text-primary">{userData.temperature}℃</span>
+          {/* 온도 */}
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-14 h-14 rounded-2xl bg-primary/8 flex items-center justify-center">
+              <span className="text-sm font-black text-primary">{userData.temperature}°</span>
+            </div>
+            <span className="text-[10px] text-gray-400 font-bold">매너온도</span>
           </div>
-          <span className="text-[10px] text-gray-400 font-bold">온도</span>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8 pb-24 bg-white">
-        
-        {/* 1. 활동 내역 (진행 중) */}
+      {/* 스크롤 콘텐츠 */}
+      <div className="relative z-10 flex-1 overflow-y-auto px-6 py-6 space-y-7 pb-24 bg-white">
+
+        {/* 활동 내역 (진행 중) */}
         {isOwnProfile && (
-          <section className="space-y-4">
-            <h3 className="font-bold text-lg">활동내역 (진행중)</h3>
+          <section className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-4 bg-primary rounded-full" />
+              <h3 className="font-black text-sm text-gray-900">활동내역 · 진행중</h3>
+            </div>
             {userData.ongoingActivities.length > 0 ? (
               userData.ongoingActivities.map(item => (
                 <div 
                   key={item.id} 
                   onClick={() => handleActivityClick(item.id)}
-                  className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
+                  className="flex p-3 bg-gray-50 rounded-2xl items-center cursor-pointer active:scale-[0.98] transition-transform border border-gray-100"
                 >
-                  <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
-                  <span className="text-sm font-bold text-gray-800">{item.title}</span>
+                  <img src={item.img} alt="물품" className="w-11 h-11 rounded-xl bg-gray-200 object-cover mr-3 flex-shrink-0" />
+                  <span className="text-sm font-bold text-gray-800 flex-1 truncate">{item.title}</span>
+                  <span className="text-[10px] font-bold text-primary bg-primary/8 px-2 py-1 rounded-lg ml-2 flex-shrink-0">진행중</span>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-gray-400 py-2">진행 중인 내역이 없습니다.</p>
+              <p className="text-xs text-gray-300 font-medium py-2 pl-3">진행 중인 내역이 없습니다.</p>
             )}
           </section>
         )}
 
-        {/* 2. 활동 내역 (완료) */}
-        <section className="space-y-4">
-          <h3 className="font-bold text-lg">활동내역 (완료)</h3>
+        {/* 활동 내역 (완료) */}
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-gray-300 rounded-full" />
+            <h3 className="font-black text-sm text-gray-900">활동내역 · 완료</h3>
+          </div>
           {userData.completedActivities.length > 0 ? (
             userData.completedActivities.map(item => (
               <div 
                 key={item.id} 
                 onClick={() => handleActivityClick(item.id)}
-                className="flex p-3 bg-gray-50 rounded-xl items-center cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
+                className="flex p-3 bg-gray-50 rounded-2xl items-center cursor-pointer active:scale-[0.98] transition-transform border border-gray-100"
               >
-                <img src={item.img} alt="물품" className="w-12 h-12 rounded-lg bg-gray-200 object-cover mr-3" />
-                <span className="text-sm font-bold text-gray-800">{item.title}</span>
+                <img src={item.img} alt="물품" className="w-11 h-11 rounded-xl bg-gray-200 object-cover mr-3 flex-shrink-0" />
+                <span className="text-sm font-bold text-gray-800 flex-1 truncate">{item.title}</span>
+                <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-lg ml-2 flex-shrink-0">완료</span>
               </div>
             ))
           ) : (
-            <p className="text-xs text-gray-400 py-2">완료된 내역이 없습니다.</p>
+            <p className="text-xs text-gray-300 font-medium py-2 pl-3">완료된 내역이 없습니다.</p>
           )}
         </section>
 
-        {/* 3. 받은 후기 */}
-        <section className="space-y-4">
-          <h3 className="font-bold text-lg">받은 후기</h3>
-          <div className="space-y-3">
-            {userData.reviews.length > 0 ? (
-              userData.reviews.map(review => (
-                <div key={review.id} className="p-4 border border-gray-100 rounded-2xl bg-white shadow-sm">
-                  <div className="flex items-center mb-2">
-                    <span className="text-sm mr-2">{review.type === 'POSITIVE' ? '😊' : '🙁'}</span>
-                    <span className={`text-[11px] font-bold ${review.type === 'POSITIVE' ? 'text-primary' : 'text-red-400'}`}>
-                      {review.type === 'POSITIVE' ? '만족' : '불만족'}
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-600 leading-relaxed font-medium">{review.content}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-xs text-gray-400 py-2">받은 후기가 없습니다.</p>
-            )}
+        {/* 받은 후기 */}
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-4 bg-primary/40 rounded-full" />
+            <h3 className="font-black text-sm text-gray-900">받은 후기</h3>
           </div>
+          {userData.reviews.length > 0 ? (
+            userData.reviews.map(review => (
+              <div key={review.id} className="p-4 border border-gray-100 rounded-2xl bg-white shadow-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm">{review.type === 'POSITIVE' ? '😊' : '🙁'}</span>
+                  <span className={`text-[11px] font-black ${review.type === 'POSITIVE' ? 'text-primary' : 'text-red-400'}`}>
+                    {review.type === 'POSITIVE' ? '만족' : '불만족'}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 leading-relaxed font-medium">{review.content}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-xs text-gray-300 font-medium py-2 pl-3">받은 후기가 없습니다.</p>
+          )}
         </section>
 
       </div>

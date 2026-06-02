@@ -34,10 +34,10 @@ const HomePage = () => {
 
       <div className="flex-1 flex flex-col min-h-0 bg-white relative overflow-hidden">
 
-        {/* 배경 장식 — 오른쪽 상단에 크고 과감한 원 하나만 */}
+        {/* 배경 장식 — 왼쪽 중상단, 작게 */}
         <div
-          className="absolute -top-32 -right-32 w-80 h-80 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.15) 0%, rgba(70,75,170,0.06) 55%, transparent 75%)' }}
+          className="absolute -top-16 -left-20 w-64 h-64 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.13) 0%, rgba(70,75,170,0.04) 58%, transparent 75%)' }}
         />
 
         {/* 상단 헤더 */}

@@ -30,10 +30,10 @@ const LoginPage = () => {
     <Layout hideNav>
       <div className="flex-1 flex flex-col bg-white h-full overflow-hidden relative">
 
-        {/* 배경 장식 — 오른쪽 상단에 크고 과감한 원 하나 */}
+        {/* 배경 장식 — 오른쪽 상단, 크게 */}
         <div
-          className="absolute -top-24 -right-24 w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.18) 0%, rgba(70,75,170,0.07) 60%, transparent 80%)' }}
+          className="absolute -top-32 -right-20 w-96 h-96 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.15) 0%, rgba(70,75,170,0.05) 55%, transparent 72%)' }}
         />
 
         {/* 로고 영역 */}

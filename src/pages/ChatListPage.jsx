@@ -28,6 +28,11 @@ function ChatListPage() {
 
   return (
     <Layout>
+      {/* 배경 장식 — 오른쪽 중간, 아주 크게 */}
+      <div
+        className="absolute top-20 -right-40 w-[340px] h-[340px] rounded-full pointer-events-none z-0"
+        style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.10) 0%, rgba(70,75,170,0.03) 55%, transparent 70%)' }}
+      />
       {/* 헤더 */}
       <div className="px-6 pt-8 pb-4 bg-white">
         <div className="flex items-center justify-between mb-1">
