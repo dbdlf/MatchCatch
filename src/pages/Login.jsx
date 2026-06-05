@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Layout from '../components/Layout';
-import { authApi } from '../api';
+import { authApi, tokenStorage } from '../api';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -18,7 +18,11 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       const response = await authApi.login(userId, password);
-      if (response.success) navigate('/home');
+      // ✅ 토큰 저장 후 이동
+      if (response.access_token) {
+        tokenStorage.save(response.access_token);
+      }
+      navigate('/home');
     } catch (error) {
       alert(error.message);
     } finally {
@@ -46,7 +50,7 @@ const LoginPage = () => {
           </div>
           <h1 className="text-3xl font-black tracking-tight">
             <span className="bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-              Match Catch!!
+              Match Catch
             </span>
           </h1>
           <p className="text-xs text-gray-400 mt-2 font-medium tracking-wide">분실물 매칭 서비스</p>

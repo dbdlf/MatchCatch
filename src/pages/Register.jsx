@@ -18,7 +18,7 @@ const RegisterPage = () => {
   const [focusedField, setFocusedField] = useState(null);
 
   const [formData, setFormData] = useState({
-    studentId: '', 
+    studentId: '',
     userId: '',
     password: '',
     confirmPassword: ''
@@ -61,24 +61,25 @@ const RegisterPage = () => {
     }
   };
 
-  const isFormValid = 
+  const isFormValid =
     formData.studentId.trim() &&
     formData.userId.trim() &&
     formData.password &&
     formData.confirmPassword &&
     formData.password === formData.confirmPassword &&
-    isStudentIdChecked && 
-    isIdChecked;      
+    isStudentIdChecked &&
+    isIdChecked;
 
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!isFormValid || isLoading) return;
     try {
       setIsLoading(true);
+      // ✅ 백엔드가 요구하는 키: student_id (기존 studentId → student_id 수정)
       const payload = {
-        studentId: formData.studentId,
+        student_id: formData.studentId,
         username: formData.userId,
-        password: formData.password
+        password: formData.password,
       };
       await authApi.register(payload);
       alert('회원가입이 완료되었습니다!');
@@ -105,7 +106,6 @@ const RegisterPage = () => {
     { label: '아이디', done: isIdChecked },
     { label: '비밀번호', done: !!(formData.password && formData.confirmPassword && passwordMatch) },
   ];
-  const doneCount = steps.filter(s => s.done).length;
 
   return (
     <Layout hideNav>
@@ -138,11 +138,11 @@ const RegisterPage = () => {
           {/* 학번 */}
           <InputField label="학번" required focused={focusedField === 'studentId'}>
             <div className="flex gap-2">
-              <input 
+              <input
                 name="studentId"
                 inputMode="numeric"
                 className={inputClass('studentId')}
-                type="text" 
+                type="text"
                 placeholder="학번 8자리"
                 value={formData.studentId}
                 onChange={handleChange}
@@ -150,13 +150,13 @@ const RegisterPage = () => {
                 onBlur={() => setFocusedField(null)}
                 disabled={isLoading}
               />
-              <button 
+              <button
                 type="button"
                 onClick={checkStudentIdDuplicate}
                 disabled={isLoading}
                 className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${
-                  isStudentIdChecked 
-                    ? 'bg-emerald-50 text-emerald-600 border-2 border-emerald-100' 
+                  isStudentIdChecked
+                    ? 'bg-emerald-50 text-emerald-600 border-2 border-emerald-100'
                     : 'bg-gray-100 text-gray-500 hover:bg-primary/10 hover:text-primary border-2 border-transparent'
                 }`}
               >
@@ -168,10 +168,10 @@ const RegisterPage = () => {
           {/* 아이디 */}
           <InputField label="아이디" required focused={focusedField === 'userId'}>
             <div className="flex gap-2">
-              <input 
+              <input
                 name="userId"
                 className={inputClass('userId')}
-                type="text" 
+                type="text"
                 placeholder="사용할 아이디"
                 value={formData.userId}
                 onChange={handleChange}
@@ -179,13 +179,13 @@ const RegisterPage = () => {
                 onBlur={() => setFocusedField(null)}
                 disabled={isLoading}
               />
-              <button 
+              <button
                 type="button"
                 onClick={checkIdDuplicate}
                 disabled={isLoading}
                 className={`px-4 py-2 rounded-2xl text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${
-                  isIdChecked 
-                    ? 'bg-emerald-50 text-emerald-600 border-2 border-emerald-100' 
+                  isIdChecked
+                    ? 'bg-emerald-50 text-emerald-600 border-2 border-emerald-100'
                     : 'bg-gray-100 text-gray-500 hover:bg-primary/10 hover:text-primary border-2 border-transparent'
                 }`}
               >
@@ -196,10 +196,10 @@ const RegisterPage = () => {
 
           {/* 비밀번호 */}
           <InputField label="비밀번호" required focused={focusedField === 'password'}>
-            <input 
+            <input
               name="password"
               className={inputClass('password')}
-              type="password" 
+              type="password"
               placeholder="비밀번호 입력"
               value={formData.password}
               onChange={handleChange}
@@ -211,13 +211,13 @@ const RegisterPage = () => {
 
           {/* 비밀번호 확인 */}
           <InputField label="비밀번호 확인" required focused={focusedField === 'confirmPassword'}>
-            <input 
+            <input
               name="confirmPassword"
               className={`${inputClass('confirmPassword')} ${
-                passwordMatch ? '!border-emerald-200 !bg-emerald-50/50' : 
+                passwordMatch ? '!border-emerald-200 !bg-emerald-50/50' :
                 passwordMismatch ? '!border-red-200 !bg-red-50/50' : ''
               }`}
-              type="password" 
+              type="password"
               placeholder="비밀번호 재입력"
               value={formData.confirmPassword}
               onChange={handleChange}
@@ -241,12 +241,12 @@ const RegisterPage = () => {
 
           {/* 가입 버튼 */}
           <div className="pt-4">
-            <button 
+            <button
               disabled={!isFormValid || isLoading}
               onClick={handleRegister}
               className={`w-full py-4 rounded-2xl text-sm font-bold transition-all ${
-                !isFormValid || isLoading 
-                  ? 'bg-gray-100 text-gray-300 cursor-not-allowed' 
+                !isFormValid || isLoading
+                  ? 'bg-gray-100 text-gray-300 cursor-not-allowed'
                   : 'bg-gradient-to-r from-primary to-primary-light text-white active:scale-[0.98] shadow-lg shadow-primary/25'
               }`}
             >

@@ -1,101 +1,96 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { profileApi, matchApi } from '../api';
 
 function ProfilePage() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const receivedIsOwnProfile = location.state?.isOwnProfile || false;
-  const receivedUserId = location.state?.userId || "차차"; 
+  const receivedUserId = location.state?.userId || '차차';
 
-  const [isOwnProfile] = useState(receivedIsOwnProfile); 
+  const [isOwnProfile] = useState(receivedIsOwnProfile);
   const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
-    
-    const hasDummy = mockItems.some(item => String(item.id).startsWith('dummy_1'));
-    if (!hasDummy) {
-      const initialDummies = [
-        {
-          id: "dummy_1",
-          mode: "lost", 
-          status: "REGISTERED",
-          title: "검은색 카드 지갑",
-          content: "검은색 가죽 카드 지갑입니다.",
-          location: "충남대학교 정문 근처",
-          time: "2026-05-19 14:00",
-          imageUrl: "/images/black_wallet.png",
-          author: { id: "차차", temperature: 46.5 }
-        },
-        {
-          id: "dummy_2",
-          mode: "lost",
-          status: "DELIVERED",
-          title: "흰색 텀블러",
-          content: "스탠리 텀블러입니다.",
-          location: "인문대학 1층 로비",
-          time: "2026-05-18 11:30",
-          imageUrl: "/images/white_tumbler.png",
-          author: { id: "차차", temperature: 46.5 }
-        },
-        {
-          id: "dummy_3",
-          mode: "lost",
-          status: "DELIVERED",
-          title: "갤럭시 버즈 프로",
-          content: "화이트 색상의 갤럭시 버즈 프로입니다.",
-          location: "공과대학 5호관 2층",
-          time: "2026-05-17 16:45",
-          imageUrl: "/images/buds_pro.png",
-          author: { id: "차차", temperature: 46.5 }
+    const fetchProfileData = async () => {
+      try {
+        setIsLoading(true);
+
+        if (isOwnProfile) {
+          // ✅ 백엔드 GET /profile/me + GET /profile/me/activities 연동
+          const [profile, activities] = await Promise.all([
+            profileApi.getProfile(),
+            profileApi.getActivities(),
+          ]);
+
+          // ✅ 백엔드 GET /matches 에서 내 매칭 내역 분류
+          const matches = await matchApi.getMatches();
+
+          // 진행 중: PENDING 또는 ACCEPTED 상태에서 내가 requester인 것
+          const ongoingMatches = matches.filter(
+            m => (m.status === 'PENDING' || m.status === 'ACCEPTED') && m.requester?.user_id === 1
+          );
+          // 완료: DELIVERED 상태에서 내가 참여한 것
+          const completedMatches = matches.filter(
+            m => m.status === 'DELIVERED'
+          );
+
+          // 받은 후기 — 백엔드에 전용 엔드포인트 미구현, activities에서 추출
+          const reviewActivities = activities.filter(
+            a => a.activity_type === 'REVIEW_CREATED'
+          );
+
+          setUserData({
+            id: profile.username,
+            temperature: profile.temperature,
+            ongoingActivities: ongoingMatches.map(m => ({
+              id: m.match_id,
+              title: m.lost_item?.title || '분실물 정보 없음',
+              img: m.found_item?.image_url || '',
+            })),
+            completedActivities: completedMatches.map(m => ({
+              id: m.match_id,
+              title: m.lost_item?.title || '분실물 정보 없음',
+              img: m.found_item?.image_url || '',
+            })),
+            // 받은 후기는 백엔드에 조회 API가 생기면 교체 예정, 현재는 더미 유지
+            reviews: [
+              { id: 1, type: 'POSITIVE', content: '정말 친절하시고 시간 약속도 잘 지키셨어요!' },
+              { id: 2, type: 'POSITIVE', content: '덕분에 소중한 물건을 찾았습니다. 감사합니다.' },
+            ],
+          });
+        } else {
+          // ✅ 타 유저 프로필 — 백엔드에 GET /profile/:user_id 미구현
+          // 구현될 때까지 더미 데이터 유지 (백엔드 팀에 추가 요청 필요)
+          setUserData({
+            id: receivedUserId,
+            temperature: 36.5,
+            ongoingActivities: [],
+            completedActivities: [],
+            reviews: [],
+          });
         }
-      ];
-      mockItems = [...initialDummies, ...mockItems];
-      localStorage.setItem('mockItems', JSON.stringify(mockItems));
-    }
+      } catch (err) {
+        alert('프로필을 불러오는 데 실패했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    const profileOwnerId = isOwnProfile ? "차차" : receivedUserId;
-
-    const ongoing = mockItems.filter(item => 
-      item.author?.id === profileOwnerId && 
-      (item.status === 'REGISTERED' || item.status === 'MATCHING') && 
-      (item.mode === 'found' || String(item.id).startsWith('dummy_'))
-    );
-    
-    const completed = mockItems.filter(item => 
-      item.author?.id === profileOwnerId &&
-      item.status === 'DELIVERED'
-    );
-
-    setUserData({
-      id: profileOwnerId,
-      temperature: profileOwnerId === 'User1234' ? 36.5 : 46.5,
-      ongoingActivities: ongoing.map(item => ({
-        id: item.id,
-        title: item.id === "dummy_1" ? "검은색 카드 지갑" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
-        img: item.imageUrl
-      })),
-      completedActivities: profileOwnerId === 'User1234' ? [] : completed.map(item => ({
-        id: item.id,
-        title: item.id === "dummy_2" ? "흰색 텀블러" : item.id === "dummy_3" ? "갤럭시 버즈 프로" : (item.mode === 'found' ? `${item.content.substring(0, 15)}...` : item.title),
-        img: item.imageUrl
-      })),
-      reviews: profileOwnerId === 'User1234' ? [] : [
-        { id: 1, type: "POSITIVE", content: "정말 친절하시고 시간 약속도 잘 지키셨어요!" },
-        { id: 2, type: "POSITIVE", content: "덕분에 소중한 물건을 찾았습니다. 감사합니다." }
-      ]
-    });
+    fetchProfileData();
   }, [receivedUserId, isOwnProfile]);
 
+  // 활동 항목 클릭 — 진행중/완료 탭 모두 postdetail로 이동
   const handleActivityClick = (activityId) => {
     navigate('/postdetail', {
-      state: { postId: activityId, isAuthor: isOwnProfile }
+      state: { postId: activityId, isAuthor: isOwnProfile },
     });
   };
 
-  if (!userData) {
+  if (isLoading || !userData) {
     return (
       <Layout>
         <div className="flex items-center justify-center h-full text-gray-400 text-sm font-medium">
@@ -107,7 +102,7 @@ function ProfilePage() {
 
   return (
     <Layout>
-      {/* 배경 장식 — 왼쪽 하단, 아주 크게 */}
+      {/* 배경 장식 */}
       <div
         className="absolute -bottom-40 -left-32 w-[420px] h-[420px] rounded-full pointer-events-none z-0"
         style={{ background: 'radial-gradient(circle, rgba(123,143,224,0.11) 0%, rgba(70,75,170,0.04) 52%, transparent 68%)' }}
@@ -126,11 +121,11 @@ function ProfilePage() {
         )}
 
         <h1 className="text-sm font-black text-gray-900">
-          {isOwnProfile ? "내 프로필" : `${userData.id}님의 프로필`}
+          {isOwnProfile ? '내 프로필' : `${userData.id}님의 프로필`}
         </h1>
 
         {isOwnProfile ? (
-          <button 
+          <button
             onClick={() => navigate('/profileedit', { state: { userId: userData.id } })}
             className="text-xs font-bold text-gray-400 active:scale-95 transition-transform px-1"
           >
@@ -145,15 +140,16 @@ function ProfilePage() {
       <div className="relative z-10 px-6 py-6 border-b border-gray-50 bg-white">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {/* 아바타 */}
             <div className="relative">
               <div className="w-20 h-20 rounded-2xl bg-gray-100 overflow-hidden shadow-sm">
-                <img 
-                  src={isOwnProfile ? (location.state?.userImg || "/images/profile.png") : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"} 
-                  alt="프로필 사진" 
+                <img
+                  src={isOwnProfile
+                    ? (location.state?.userImg || '/images/profile.png')
+                    : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'}
+                  alt="프로필 사진"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+                    e.target.src = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
                   }}
                 />
               </div>
@@ -179,7 +175,7 @@ function ProfilePage() {
       {/* 스크롤 콘텐츠 */}
       <div className="relative z-10 flex-1 overflow-y-auto px-6 py-6 space-y-7 pb-24 bg-white">
 
-        {/* 활동 내역 (진행 중) */}
+        {/* 활동 내역 (진행 중) — 내 프로필에서만 표시 */}
         {isOwnProfile && (
           <section className="space-y-3">
             <div className="flex items-center gap-2">
@@ -188,12 +184,14 @@ function ProfilePage() {
             </div>
             {userData.ongoingActivities.length > 0 ? (
               userData.ongoingActivities.map(item => (
-                <div 
-                  key={item.id} 
+                <div
+                  key={item.id}
                   onClick={() => handleActivityClick(item.id)}
                   className="flex p-3 bg-gray-50 rounded-2xl items-center cursor-pointer active:scale-[0.98] transition-transform border border-gray-100"
                 >
-                  <img src={item.img} alt="물품" className="w-11 h-11 rounded-xl bg-gray-200 object-cover mr-3 flex-shrink-0" />
+                  <div className="w-11 h-11 rounded-xl bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
+                    {item.img && <img src={item.img} alt="물품" className="w-full h-full object-cover" />}
+                  </div>
                   <span className="text-sm font-bold text-gray-800 flex-1 truncate">{item.title}</span>
                   <span className="text-[10px] font-bold text-primary bg-primary/8 px-2 py-1 rounded-lg ml-2 flex-shrink-0">진행중</span>
                 </div>
@@ -212,12 +210,14 @@ function ProfilePage() {
           </div>
           {userData.completedActivities.length > 0 ? (
             userData.completedActivities.map(item => (
-              <div 
-                key={item.id} 
+              <div
+                key={item.id}
                 onClick={() => handleActivityClick(item.id)}
                 className="flex p-3 bg-gray-50 rounded-2xl items-center cursor-pointer active:scale-[0.98] transition-transform border border-gray-100"
               >
-                <img src={item.img} alt="물품" className="w-11 h-11 rounded-xl bg-gray-200 object-cover mr-3 flex-shrink-0" />
+                <div className="w-11 h-11 rounded-xl bg-gray-200 overflow-hidden mr-3 flex-shrink-0">
+                  {item.img && <img src={item.img} alt="물품" className="w-full h-full object-cover" />}
+                </div>
                 <span className="text-sm font-bold text-gray-800 flex-1 truncate">{item.title}</span>
                 <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-lg ml-2 flex-shrink-0">완료</span>
               </div>
