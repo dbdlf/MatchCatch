@@ -3,19 +3,6 @@ import { delay } from './index';
 const getMockItems = () => JSON.parse(localStorage.getItem('mockItems')) || [];
 const saveMockItems = (items) => localStorage.setItem('mockItems', JSON.stringify(items));
 
-// ─────────────────────────────────────────────────────────────────────────────
-// AI 이미지 분석 Mock
-//
-// 🔄 실제 AI API 연동 시 교체 포인트:
-//   이 함수만 실제 API 호출로 바꾸면 됩니다. Upload.jsx는 수정 불필요.
-//   반환 형식: { title, description, keywords } 을 유지해 주세요.
-//
-// 예시 (실제 연동 시):
-//   export const analyzeImage = async (base64Image, mimeType) => {
-//     const res = await fetch('https://your-ai-server.com/analyze', { ... });
-//     return await res.json(); // { title, description, keywords }
-//   };
-// ─────────────────────────────────────────────────────────────────────────────
 const MOCK_AI_RESULTS = [
   {
     title: '검정 가죽 반지갑',
@@ -45,29 +32,12 @@ const MOCK_AI_RESULTS = [
 ];
 
 export const analyzeImage = async (base64Image, mimeType) => {
-  // Mock: 1~1.5초 딜레이 후 랜덤 결과 반환
   await delay(1000 + Math.random() * 500);
-  const result = MOCK_AI_RESULTS[2]; // 네이비 백팩으로 고정 (index 2)
+  const result = MOCK_AI_RESULTS[2];
   return { ...result };
 
-  // 🔄 실제 AI API 연동 시 위 두 줄을 지우고 아래처럼 교체하세요:
-  // const res = await fetch('https://your-ai-server.com/analyze', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ image: base64Image, mimeType }),
-  // });
-  // if (!res.ok) throw new Error(`AI 서버 오류 (${res.status})`);
-  // return await res.json(); // 반환: { title, description, keywords }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 위치/시간 Mock
-//
-// 🔄 실제 연동 시:
-//   - 시간: EXIF 파싱(exifr 라이브러리) 또는 촬영 시각 API
-//   - 위치: Geolocation API + Nominatim(무료) 또는 카카오/네이버 지도 API
-//   Upload.jsx의 getMockLocationAndTime을 실제 함수로 교체하세요.
-// ─────────────────────────────────────────────────────────────────────────────
 const MOCK_LOCATIONS = [
   '대전 유성구 대학로 99 충남대학교',
   '대전 유성구 궁동 충남대 정문 앞',
@@ -84,16 +54,8 @@ export const getMockLocationAndTime = async () => {
   const location = MOCK_LOCATIONS[Math.floor(Math.random() * MOCK_LOCATIONS.length)];
   return { datetime, location };
 
-  // 🔄 실제 위치/시간 연동 시 위 세 줄을 지우고 아래처럼 교체하세요:
-  // const exif = await extractExifData(file);  // exifr 파싱
-  // const datetime = exif.datetime ? formatDatetime(new Date(exif.datetime)) : formatDatetime(new Date());
-  // const location = exif.lat ? await coordsToAddress(exif.lat, exif.lng) : await getBrowserGeolocation();
-  // return { datetime, location };
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 기존 itemApi (수정 없음)
-// ─────────────────────────────────────────────────────────────────────────────
 export const itemApi = {
   registerFoundItem: async (formData) => {
     await delay(800);
@@ -145,17 +107,36 @@ export const itemApi = {
 
   getSimilarFoundItems: async (lostItemId) => {
     await delay(1200);
-    const items = getMockItems();
-    const foundItems = items.filter(item => item.mode === 'found');
-    return foundItems.map((item, index) => ({
-      id: item.id,
-      title: item.title,
-      content: item.content,
-      keywords: item.keywords,
-      img: item.imageUrl,
-      similarity_score: item.similarity_score || Math.max(95 - index * 5, 10),
-      location: item.location,
-    }));
+    return [
+      {
+        id: 'dummy_search_4',
+        content: '노란색 장우산입니다. 손잡이 부분은 갈색입니다.',
+        keywords: '노란색, 우산, 장우산, 갈색',
+        img: '/images/yellow.jpeg',
+        similarity_score: 95.5,
+      },
+      {
+        id: 'dummy_search_1',
+        content: '연두색 장우산입니다. 손잡이 부분은 갈색입니다.',
+        keywords: '연두색, 우산, 장우산, 갈색',
+        img: '/images/green.jpeg',
+        similarity_score: 80.5,
+      },
+      {
+        id: 'dummy_search_3',
+        content: '회색 장우산입니다. 손잡이 부분은 검은색입니다.',
+        keywords: '회색, 우산, 장우산, 검은색',
+        img: '/images/grey.jpeg',
+        similarity_score: 73.2,
+      },
+      {
+        id: 'dummy_search_2',
+        content: '흰색 단우산입니다. 남색 줄무늬가 있어요.',
+        keywords: '흰색, 우산, 단우산, 남색, 줄무늬',
+        img: '/images/white.jpeg',
+        similarity_score: 35.0,
+      },
+    ];
   },
 
   editFoundItem: async (itemId, formData) => {
