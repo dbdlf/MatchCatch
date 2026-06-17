@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* v4 커스텀 색상 정의 방식 */
+
 @theme {
   --color-primary: #464BAA;
   --color-primary-light: #7B8FE0;
@@ -14,7 +14,7 @@ body {
 
 #root {
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
   display: block;
   box-sizing: border-box;
 }
