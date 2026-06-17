@@ -61,15 +61,9 @@ function SearchResultPage() {
         }
       ];
 
-      let mockItems = JSON.parse(localStorage.getItem('mockItems')) || [];
-      const hasSearchDummy = mockItems.some(item => item.id === 'dummy_search_1');
-      if (!hasSearchDummy) {
-        mockItems = [...mockItems, ...dummyData];
-        localStorage.setItem('mockItems', JSON.stringify(mockItems));
-      }
-
-      const baseResults = initialResults.length > 0 ? initialResults : dummyData;
-      const sortedResults = [...baseResults].sort((a, b) => (b.similarity_score || 0) - (a.similarity_score || 0));
+      // 시연용: 검색 결과는 항상 우산 더미 4종만 고정으로 보여준다.
+      // (실제 등록된 습득물과 섞이지 않도록 mockItems에는 저장하지 않음)
+      const sortedResults = [...dummyData].sort((a, b) => (b.similarity_score || 0) - (a.similarity_score || 0));
       setResults(sortedResults);
       setIsLoading(false);
     }, 1500);
@@ -77,7 +71,6 @@ function SearchResultPage() {
     return () => clearTimeout(timer);
   }, [initialResults]);
 
-  // 일치율 → primary 단색 + opacity로 강도 표현
   const getScoreOpacity = (score) => {
     if (score >= 80) return 1;
     if (score >= 50) return 0.5;
@@ -86,7 +79,6 @@ function SearchResultPage() {
 
   return (
     <Layout>
-      {/* 헤더 */}
       <div className="px-6 pt-8 pb-5 bg-white">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-1 h-5 bg-gradient-to-b from-primary to-primary-light rounded-full" />
@@ -101,7 +93,6 @@ function SearchResultPage() {
 
       <div className="flex-1 overflow-y-auto px-5 pb-24 bg-white">
         {isLoading ? (
-          /* 로딩 상태 */
           <div className="h-full flex flex-col items-center justify-center space-y-6 pb-16">
             <div className="relative">
               <div className="w-16 h-16 rounded-2xl bg-primary/8 flex items-center justify-center">
@@ -115,7 +106,6 @@ function SearchResultPage() {
               <p className="text-sm font-bold text-gray-700">AI가 분석 중이에요</p>
               <p className="text-xs text-gray-400 font-medium">유사한 습득물을 찾고 있습니다...</p>
             </div>
-            {/* 스켈레톤 카드 */}
             {[1,2,3].map(i => (
               <div key={i} className="w-full h-28 bg-gray-100 rounded-2xl animate-pulse" style={{ opacity: 1 - i * 0.2 }} />
             ))}
@@ -131,7 +121,6 @@ function SearchResultPage() {
                   className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm active:scale-[0.99] transition-transform"
                 >
                   <div className="flex p-4 gap-3.5">
-                    {/* 이미지 */}
                     <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 relative">
                       <img src={item.img} alt="습득물" className="w-full h-full object-cover" />
                       {index === 0 && (
@@ -141,10 +130,8 @@ function SearchResultPage() {
                       )}
                     </div>
 
-                    {/* 내용 */}
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        {/* 일치율 바 — primary 단색, opacity로 강도 구분 */}
                         <div className="flex items-center gap-2 mb-2">
                           <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                             <div
@@ -193,7 +180,6 @@ function SearchResultPage() {
             })}
           </div>
         ) : (
-          /* 결과 없음 */
           <div className="h-full flex flex-col items-center justify-center text-center px-6 pb-16 space-y-5">
             <div className="w-20 h-20 rounded-3xl bg-gray-100 flex items-center justify-center">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
