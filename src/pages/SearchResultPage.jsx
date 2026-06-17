@@ -20,12 +20,12 @@ function SearchResultPage() {
           id: "dummy_search_1",
           mode: "found",
           content: "연두색 장우산입니다. 손잡이 부분은 갈색입니다",
-          keywords: "연두색, 우산, 장우산, 갈색",
+          keywords: "연두색, 우산, 장우산, 갈색 손잡이",
           img: "/images/green.jpeg",
           imageUrl: "/images/usagi1.png", 
           similarity_score: 80.5,
           status: "REGISTERED",
-          location: "공학5호관",
+          location: "공대5호관",
           time: "2026-06-05 10:00",
           author: { id: "익명", temperature: 36.5 }
         },
@@ -46,7 +46,7 @@ function SearchResultPage() {
           id: "dummy_search_3",
           mode: "found",
           content: "회색 장우산입니다. 손잡이 부분은 검은색입니다.",
-          keywords: "회색, 우산, 장우산, 검은색",
+          keywords: "회색, 우산, 장우산, 검은색 손잡이",
           img: "/images/grey.jpeg",
           imageUrl: "/images/grey.jpeg",
           similarity_score: 73.2,
@@ -59,7 +59,7 @@ function SearchResultPage() {
           id: "dummy_search_4",
           mode: "found",
           content: "노란색 장우산입니다. 손잡이 부분은 갈색입니다.",
-          keywords: "노란색, 우산, 장우산, 갈색",
+          keywords: "노란색, 우산, 장우산, 갈색 손잡이, LANDSCAPE",
           img: "/images/yellow.jpeg",
           imageUrl: "/images/yellow.jpeg",
           similarity_score: 95.5,
@@ -145,8 +145,17 @@ function SearchResultPage() {
                   className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm active:scale-[0.99] transition-transform"
                 >
                   <div className="flex p-4 gap-3.5">
-                    <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 relative">
-                      <img src={item.img} alt="습득물" className="w-full h-full object-cover" />
+                    <div
+                      className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0 relative"
+                      style={{ transform: 'translateZ(0)', WebkitTransform: 'translateZ(0)' }}
+                    >
+                      <img
+                        src={item.img}
+                        alt="습득물"
+                        className="w-full h-full object-cover"
+                        style={{ transform: 'translateZ(0)', WebkitTransform: 'translateZ(0)' }}
+                        loading="eager"
+                      />
                       {index === 0 && (
                         <div className="absolute top-1 left-1 bg-primary text-white text-[9px] font-black px-1.5 py-0.5 rounded-md">
                           TOP
@@ -171,14 +180,8 @@ function SearchResultPage() {
                           </span>
                         </div>
 
-                        <p className="text-sm font-bold text-gray-800 leading-snug line-clamp-2">
-                          {(!item.title || item.title === '습득물 (제목 없음)') && item.content 
-                            ? item.content 
-                            : item.title}
-                        </p>
-
                         {(item.location || item.time) && (
-                          <div className="flex items-center gap-2.5 mt-1 text-[10px] text-gray-400 font-medium">
+                          <div className="flex items-center gap-2.5 mt-0 text-[10px] text-gray-400 font-medium">
                             {item.location && (
                               <span className="flex items-center gap-0.5">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -199,7 +202,7 @@ function SearchResultPage() {
                         )}
 
                         <div className="flex flex-wrap gap-1 mt-1.5">
-                          {(item.keywords || '').split(',').slice(0, 3).map((kw, i) => (
+                          {(item.keywords || '').split(',').filter(kw => kw.trim()).map((kw, i) => (
                             <span key={i} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">
                               {kw.trim()}
                             </span>
