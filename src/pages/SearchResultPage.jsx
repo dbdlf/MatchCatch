@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/Layout';
+import { matchApi } from '../api';
 
 function SearchResultPage() {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ function SearchResultPage() {
           imageUrl: "/images/usagi1.png", 
           similarity_score: 80.5,
           status: "REGISTERED",
+          location: "공학5호관",
+          time: "2026-06-05 10:00",
           author: { id: "익명", temperature: 36.5 }
         },
         {
@@ -35,6 +38,8 @@ function SearchResultPage() {
           imageUrl: "/images/usagi2.png",
           similarity_score: 35.0,
           status: "REGISTERED",
+          location: "도서관 1층",
+          time: "2026-06-04 15:30",
           author: { id: "익명", temperature: 36.5 }
         },
         {
@@ -46,6 +51,8 @@ function SearchResultPage() {
           imageUrl: "/images/grey.jpeg",
           similarity_score: 73.2,
           status: "REGISTERED",
+          location: "학생회관 앞",
+          time: "2026-06-05 09:10",
           author: { id: "익명", temperature: 36.5 }
         },
         {
@@ -57,6 +64,8 @@ function SearchResultPage() {
           imageUrl: "/images/yellow.jpeg",
           similarity_score: 95.5,
           status: "REGISTERED",
+          location: "정문 버스정류장",
+          time: "2026-06-05 08:45",
           author: { id: "익명", temperature: 36.5 }
         }
       ];
@@ -75,6 +84,21 @@ function SearchResultPage() {
     if (score >= 80) return 1;
     if (score >= 50) return 0.5;
     return 0.25;
+  };
+
+  const handleMatchRequest = async (foundItemId) => {
+    if (!myLostItemId) {
+      alert('내 분실물 정보가 확인되지 않습니다. 검색을 다시 진행해주세요.');
+      return;
+    }
+    if (window.confirm('습득자에게 매칭 요청을 보내시겠습니까?')) {
+      try {
+        await matchApi.createMatch(myLostItemId, foundItemId);
+        alert('매칭 요청이 성공적으로 전송되었습니다!');
+      } catch (error) {
+        alert('매칭 요청 중 오류가 발생했습니다.');
+      }
+    }
   };
 
   return (
@@ -152,6 +176,28 @@ function SearchResultPage() {
                             ? item.content 
                             : item.title}
                         </p>
+
+                        {(item.location || item.time) && (
+                          <div className="flex items-center gap-2.5 mt-1 text-[10px] text-gray-400 font-medium">
+                            {item.location && (
+                              <span className="flex items-center gap-0.5">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                {item.location}
+                              </span>
+                            )}
+                            {item.time && (
+                              <span className="flex items-center gap-0.5">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                                  <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+                                </svg>
+                                {item.time}
+                              </span>
+                            )}
+                          </div>
+                        )}
+
                         <div className="flex flex-wrap gap-1 mt-1.5">
                           {(item.keywords || '').split(',').slice(0, 3).map((kw, i) => (
                             <span key={i} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">
@@ -162,16 +208,10 @@ function SearchResultPage() {
                       </div>
 
                       <button 
-                        onClick={() => navigate('/postdetail', { 
-                          state: { 
-                            postId: item.id,   
-                            isAuthor: false,   
-                            myLostItemId: myLostItemId 
-                          } 
-                        })}
-                        className="self-end mt-2 bg-gray-900 text-white px-4 py-1.5 rounded-xl text-[11px] font-bold hover:bg-gray-700 transition-colors active:scale-95"
+                        onClick={() => handleMatchRequest(item.id)}
+                        className="self-end mt-2 bg-primary text-white px-4 py-1.5 rounded-xl text-[11px] font-bold hover:brightness-95 transition-colors active:scale-95 shadow-sm"
                       >
-                        상세보기 →
+                        매칭 요청 보내기
                       </button>
                     </div>
                   </div>

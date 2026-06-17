@@ -122,8 +122,8 @@ function PostDetailPage() {
             </div>
           )}
           <div className="bg-gray-100 p-4 rounded-xl">
-            <p className="text-gray-400 text-xs mb-1 font-bold">내용</p>
-            <p className="text-gray-800 leading-relaxed font-medium">{postData.content}</p>
+            <p className="text-gray-400 text-xs mb-1 font-bold">{postData.mode === 'found' ? '키워드' : '내용'}</p>
+            <p className="text-gray-800 leading-relaxed font-medium">{postData.content || '내용 없음'}</p>
           </div>
           <div className="bg-gray-100 p-4 rounded-xl">
             <p className="text-gray-400 text-xs mb-1 font-bold">{postData.mode === 'found' ? '습득 장소' : '분실 장소'}</p>

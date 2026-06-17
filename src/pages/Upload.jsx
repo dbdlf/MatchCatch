@@ -406,7 +406,7 @@ function UploadPage() {
   };
 
   const isFormValid = () => {
-    if (mode === 'found') return selectedImage && formData.content.trim() && analysisDone;
+    if (mode === 'found') return selectedImage && analysisDone;
     return formData.title.trim() && formData.content.trim() && formData.keywords.trim();
   };
 
@@ -418,7 +418,7 @@ function UploadPage() {
         const finalLocation = skipLocation ? '' : formData.location;
         const finalTime = skipTime ? '' : formData.time;
         const response = await itemApi.registerFoundItem({
-          description:    formData.content,
+          description:    foundKeywords.join(', '),
           keywords:       foundKeywords,
           found_location: finalLocation,
           found_time:     finalTime,
@@ -622,20 +622,6 @@ function UploadPage() {
             </div>
           )}
 
-          {/* 상세 내용 (AI가 채워주지만 직접 수정 가능) */}
-          {analysisDone && (
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden" style={{ boxShadow: '0 1px 8px rgba(0,0,0,0.04)' }}>
-              <FormRow label="상세 내용" required focused={focusedField === 'content'}>
-                <textarea placeholder="물품에 대한 상세 설명을 입력하세요" disabled={isDisabled}
-                  className="w-full mt-1.5 h-24 bg-transparent outline-none resize-none text-sm text-gray-800 placeholder:text-gray-300 disabled:opacity-50"
-                  value={formData.content}
-                  onFocus={() => setFocusedField('content')}
-                  onBlur={() => setFocusedField(null)}
-                  onChange={e => setFormData({ ...formData, content: e.target.value })} />
-              </FormRow>
-            </div>
-          )}
-
           {/* 장소 / 시간 — 키워드 추출 완료 후 자동으로 펼쳐지는 섹션 */}
           {showDetails && (
             <div
@@ -743,7 +729,7 @@ function UploadPage() {
 
           {!selectedImage && (
             <p className="text-center text-[11px] text-gray-300 font-medium">
-              사진을 먼저 업로드하면 AI가 자동으로 내용을 채워드려요
+              사진을 먼저 업로드하면 AI가 자동으로 키워드를 추출해드려요
             </p>
           )}
         </div>
