@@ -59,7 +59,7 @@ function SearchResultPage() {
           id: "dummy_search_4",
           mode: "found",
           content: "노란색 장우산입니다. 손잡이 부분은 갈색입니다.",
-          keywords: "노란색, 우산, 장우산, 갈색 손잡이, LANDSCAPE",
+          keywords: "노란색, 우산, 장우산, 갈색 손잡이",
           img: "/images/yellow.jpeg",
           imageUrl: "/images/yellow.jpeg",
           similarity_score: 95.5,
@@ -153,7 +153,6 @@ function SearchResultPage() {
                         src={item.img}
                         alt="습득물"
                         className="w-full h-full object-cover"
-                        style={{ transform: 'translateZ(0)', WebkitTransform: 'translateZ(0)' }}
                         loading="eager"
                       />
                       {index === 0 && (
@@ -180,8 +179,16 @@ function SearchResultPage() {
                           </span>
                         </div>
 
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {(item.keywords || '').split(',').filter(kw => kw.trim()).map((kw, i) => (
+                            <span key={i} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">
+                              {kw.trim()}
+                            </span>
+                          ))}
+                        </div>
+
                         {(item.location || item.time) && (
-                          <div className="flex items-center gap-2.5 mt-0 text-[10px] text-gray-400 font-medium">
+                          <div className="flex items-center gap-2.5 mt-1.5 text-[10px] text-gray-400 font-medium">
                             {item.location && (
                               <span className="flex items-center gap-0.5">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -200,14 +207,6 @@ function SearchResultPage() {
                             )}
                           </div>
                         )}
-
-                        <div className="flex flex-wrap gap-1 mt-1.5">
-                          {(item.keywords || '').split(',').filter(kw => kw.trim()).map((kw, i) => (
-                            <span key={i} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">
-                              {kw.trim()}
-                            </span>
-                          ))}
-                        </div>
                       </div>
 
                       <button 
