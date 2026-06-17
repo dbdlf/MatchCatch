@@ -60,16 +60,20 @@ export const itemApi = {
   registerFoundItem: async (formData) => {
     await delay(800);
     const items = getMockItems();
+    const keywordsStr = Array.isArray(formData.keywords)
+      ? formData.keywords.join(', ')
+      : (formData.keywords || 'AI, 자동, 추출, 키워드');
+    const firstKeyword = keywordsStr.split(',')[0]?.trim();
     const newItem = {
       id: `found_${Date.now()}`,
       mode: 'found',
       status: 'REGISTERED',
-      title: '습득물 (제목 없음)',
+      title: firstKeyword || '습득물 (제목 없음)',
       content: formData.description,
       location: formData.found_location,
       time: formData.found_time,
       imageUrl: formData.image || 'https://via.placeholder.com/400',
-      keywords: 'AI, 자동, 추출, 키워드',
+      keywords: keywordsStr,
       author: { id: '차차', temperature: 36.5 },
     };
     items.push(newItem);
@@ -107,36 +111,17 @@ export const itemApi = {
 
   getSimilarFoundItems: async (lostItemId) => {
     await delay(1200);
-    return [
-      {
-        id: 'dummy_search_4',
-        content: '노란색 장우산입니다. 손잡이 부분은 갈색입니다.',
-        keywords: '노란색, 우산, 장우산, 갈색',
-        img: '/images/yellow.jpeg',
-        similarity_score: 95.5,
-      },
-      {
-        id: 'dummy_search_1',
-        content: '연두색 장우산입니다. 손잡이 부분은 갈색입니다.',
-        keywords: '연두색, 우산, 장우산, 갈색',
-        img: '/images/green.jpeg',
-        similarity_score: 80.5,
-      },
-      {
-        id: 'dummy_search_3',
-        content: '회색 장우산입니다. 손잡이 부분은 검은색입니다.',
-        keywords: '회색, 우산, 장우산, 검은색',
-        img: '/images/grey.jpeg',
-        similarity_score: 73.2,
-      },
-      {
-        id: 'dummy_search_2',
-        content: '흰색 단우산입니다. 남색 줄무늬가 있어요.',
-        keywords: '흰색, 우산, 단우산, 남색, 줄무늬',
-        img: '/images/white.jpeg',
-        similarity_score: 35.0,
-      },
-    ];
+    const items = getMockItems();
+    const foundItems = items.filter(item => item.mode === 'found');
+    return foundItems.map((item, index) => ({
+      id: item.id,
+      title: item.title,
+      content: item.content,
+      keywords: item.keywords,
+      img: item.imageUrl,
+      similarity_score: item.similarity_score || Math.max(95 - index * 5, 10),
+      location: item.location,
+    }));
   },
 
   editFoundItem: async (itemId, formData) => {
